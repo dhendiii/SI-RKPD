@@ -197,7 +197,9 @@ class LocationController extends Controller {
                    }
                    if (isset($kecamatan) && $kecamatan !== '') {
                        $editedParams[]         = "kecamatan";
-                       $location->kecamatan       = $kecamatan;
+
+                       $location->push('archive_kecamatan', array('kecamatan' => $location->kecamatan, 'time' => \date("Y-m-d H:i:s")));
+                       $location->kecamatan    = $kecamatan;
                    }
 
                    if (isset($editedParams)) {

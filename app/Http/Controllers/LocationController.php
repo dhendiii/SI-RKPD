@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 use App\Models\Location;
+/**disimpan buat nanti:
+    $location->push('archive_kecamatan', array('kecamatan' => $location->kecamatan, 'time' => \date("Y-m-d H:i:s")));
+    $location->kecamatan    = $kecamatan;
+*/
 
 class LocationController extends Controller {
     /**
@@ -197,9 +201,6 @@ class LocationController extends Controller {
                    }
                    if (isset($kecamatan) && $kecamatan !== '') {
                        $editedParams[]         = "kecamatan";
-
-                       $location->push('archive_kecamatan', array('kecamatan' => $location->kecamatan, 'time' => \date("Y-m-d H:i:s")));
-                       $location->kecamatan    = $kecamatan;
                    }
 
                    if (isset($editedParams)) {

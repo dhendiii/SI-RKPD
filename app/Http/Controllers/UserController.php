@@ -157,7 +157,7 @@ class UserController extends Controller {
 
       if (!$isError) {
           try {
-              $result = User::with(array('location'))->where('_id', $id)->first();
+              $result = User::where('_id', $id)->with(array('location'))->first();
 
               if (!$result) {
                   throw new \Exception("User dengan id $id tidak ditemukan.");

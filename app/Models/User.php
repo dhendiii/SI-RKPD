@@ -10,9 +10,9 @@ class User extends Eloquent{
   use SoftDeletes;
 
   protected $collection = 'user';
-  protected $hidden     = array('created_at','updated_at','password');
+  protected $hidden     = array('created_at','updated_at','password','id_location');
   protected $dates      = array('deleted_at');
-  protected $fillable   = array('namaDepan','namaBelakang','noKTP','email','password','tipeUser','poin','lencana','id_location');
+  protected $fillable   = array('namaDepan','namaBelakang','noKTP','email','password','tipeUser','poin','lencana');
 
   public $timestamps    = true;
 

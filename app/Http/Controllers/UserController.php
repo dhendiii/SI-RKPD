@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 use App\Models\User;
+use App\Models\Location;
 
 class UserController extends Controller {
   /**
@@ -78,7 +79,7 @@ class UserController extends Controller {
       $email              = (isset($input['email']))        ? $input['email']       : null;
       $password           = (isset($input['password']))     ? $input['password']    : null;
       $poin               = (isset($input['poin']))         ? $input['poin']        : 0;
-      $lencana            = (isset($input['lencana']))      ? $input['lencana']     : null;
+      $lencana            = (isset($input['lencana']))      ? array($input['lencana'])     : array();
 
       if (!isset($noKTP) || $noKTP == '') {
           $missingParams[] = "noKTP";
@@ -156,7 +157,7 @@ class UserController extends Controller {
 
       if (!$isError) {
           try {
-              $result = User::where('_id', $id)->first();
+              $result = User::with(array('location'))->where('_id', $id)->first();
 
               if (!$result) {
                   throw new \Exception("User dengan id $id tidak ditemukan.");
@@ -212,8 +213,9 @@ class UserController extends Controller {
       $noKTP              = (isset($input['noKTP']))        ? $input['noKTP']       : null;
       $email              = (isset($input['email']))        ? $input['email']       : null;
       $password           = (isset($input['password']))     ? $input['password']    : null;
-      $poin               = (isset($input['poin']))         ? $input['poin']        : 0;
+      $poin               = (isset($input['poin']))         ? $input['poin']        : null;
       $lencana            = (isset($input['lencana']))      ? $input['lencana']     : null;
+      $id_location        = (isset($input['id_location']))  ? $input['id_location'] : null;
 
       if (!$isError) {
           try {
@@ -250,8 +252,11 @@ class UserController extends Controller {
                   }
                   if (isset($lencana) && $lencana !== '') {
                       $editedParams[]       = "lencana";
-                      $user->push('lencana_history', array('lencana' => $user->lencana, 'time' => \date("Y-m-d H:i:s")));
-
+                      $user->push('lencana', array('lencana' => $lencana, 'time' => \date("Y-m-d H:i:s")));
+                  }
+                  if (isset($id_location) && $id_location !== '') {
+                      $editedParams[]       = "id_location";
+                      $user->id_location    = $id_location;
                   }
 
                   if (isset($editedParams)) {

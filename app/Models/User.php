@@ -5,9 +5,6 @@ namespace App\Models;
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
-/**
- *
- */
 class User extends Eloquent{
 
   use SoftDeletes;
@@ -15,7 +12,11 @@ class User extends Eloquent{
   protected $collection = 'user';
   protected $hidden     = array('created_at','updated_at','password');
   protected $dates      = array('deleted_at');
-  protected $fillable   = array('namaDepan','namaBelakang','noKTP','email','password','tipeUser','poin','lencana');
+  protected $fillable   = array('namaDepan','namaBelakang','noKTP','email','password','tipeUser','poin','lencana','id_location');
 
   public $timestamps    = true;
+
+  public function location(){
+      return $this->hasOne('App\Models\Location','_id', 'id_location');
+  }
 }

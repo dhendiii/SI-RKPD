@@ -95,6 +95,7 @@ class KelompokController extends Controller {
                     $kelompok      = Kelompok::create(array(
                         'nama'              => $nama,
                         'priority'          => $priority,
+
                     ));
 
                     $result['id']   = $kelompok->_id;

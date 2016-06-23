@@ -16,7 +16,7 @@ class Feedback extends Eloquent{
 
   public $timestamps    = true;
 
-  public function location(){
-      return $this->hasOne('App\Models\Location','_id', 'id_location');
+  public function user(){
+      return $this->hasOne('App\Models\User','_id', 'id_user');
   }
 }

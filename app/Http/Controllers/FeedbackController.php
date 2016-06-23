@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-use App\Models\Draft;
+use App\Models\User;
 use App\Models\Feedback;
 
 class FeedbackController extends Controller {
@@ -137,7 +137,7 @@ class FeedbackController extends Controller {
 
         if (!$isError) {
             try {
-                $result = Feedback::where('_id', $id)->first();
+                $result = Feedback::where('_id', $id)->with('user')->first();
 
                 if (!$result) {
                     throw new \Exception("Feedback dengan id $id tidak ditemukan.");
@@ -189,6 +189,7 @@ class FeedbackController extends Controller {
 
         $input              = $request->all();
         $status             = (isset($input['priority']))   ? $input['priority']    : null;
+        $id_user            = (isset($input['id_user'])) ? $input['id_user']: null;
 
         if (!$isError) {
             try {
@@ -198,6 +199,10 @@ class FeedbackController extends Controller {
                     if (isset($status) && $status !== '') {
                         $editedParams[]         = "status";
                         $feedback->status         = $status;
+                    }
+                    if (isset($id_user) && $id_user !== '') {
+                        $editedParams[]       = "id_user";
+                        $feedback->id_user   = $id_user;
                     }
 
                     if (isset($editedParams)) {

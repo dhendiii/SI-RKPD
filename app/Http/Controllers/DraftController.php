@@ -9,6 +9,8 @@ use App\Models\Draft;
 use App\Models\Feedback;
 use App\Models\Information;
 use App\Models\Location;
+use App\Models\User;
+use App\Models\Tag;
 
 class DraftController extends Controller {
     /**
@@ -141,7 +143,13 @@ class DraftController extends Controller {
 
         if (!$isError) {
             try {
-                $result = Draft::where('_id', $id)->with(array('location'))->with(array('feedback'))->first();
+                $result = Draft::where('_id', $id)
+                          ->with(array('information'))
+                          ->with(array('feedback'))
+                          ->with(array('user'))
+                          ->with(array('location'))
+                          ->with(array('tag'))
+                          ->first();
 
                 if (!$result) {
                     throw new \Exception("Draft dengan id $id tidak ditemukan.");
@@ -192,11 +200,15 @@ class DraftController extends Controller {
         $editedParams       = null;
 
         $input              = $request->all();
-        $summary            = (isset($input['summary']))        ? $input['summary']     : null;
-        $status             = (isset($input['status']))         ? $input['status']      : null;
-        $id_location        = (isset($input['id_location']))    ? $input['id_location'] : null;
-        $id_feedback        = (isset($input['id_feedback']))    ? $input['id_feedback'] : null;
-        $priority           = (isset($input['prioritas']))       ? $input['prioritas']  : null;
+        $summary            = (isset($input['summary']))        ? $input['summary']         : null;
+        $status             = (isset($input['status']))         ? $input['status']          : null;
+        $id_information     = (isset($input['id_information'])) ? $input['id_information']  : null;
+        $id_feedback        = (isset($input['id_feedback']))    ? $input['id_feedback']     : null;
+        $id_user            = (isset($input['id_user']))        ? $input['id_user']         : null;
+        $id_location        = (isset($input['id_location']))    ? $input['id_location']     : null;
+        $id_tag             = (isset($input['id_tag']))         ? $input['id_tag']          : null;
+        $priority           = (isset($input['prioritas']))      ? $input['prioritas']       : null;
+
 
         if (!$isError) {
             try {
@@ -204,17 +216,33 @@ class DraftController extends Controller {
 
                 if ($draft) {
                     if (isset($summary) && $summary !== '') {
-                        $editedParams[]         = "summary";
+                        $editedParams[]       = "summary";
+                        $draft->push('archive_draft',array('summary' => $draft->summary, 'time' => \date("Y-m-d H:i:s")));
                         $draft->summary      = $summary;
                     }
+
+                    if (isset($id_information) && $id_information !== '') {
+                        $editedParams[]       = "id_information";
+                        $draft->push('id_information', array('id_information' => $id_information));
+                    }
+                    if (isset($id_feedback) && $id_feedback !== '') {
+                        $editedParams[]       = "id_feedback";
+                        $draft->push('id_feedback', array('id_feedback' => $id_feedback));
+                    }
+                    if (isset($id_tag) && $id_tag !== '') {
+                        $editedParams[]       = "id_tag";
+                        $draft->push('id_tag', array('id_tag' => $id_tag));
+                    }
+
                     if (isset($id_location) && $id_location !== '') {
                         $editedParams[]         = "id_location";
                         $draft->id_location  = $id_location;
                     }
-                    if (isset($id_feedback) && $id_feedback !== '') {
-                        $editedParams[]         = "id_feedback";
-                        $draft->id_feedback  = $id_feedback;
+                    if (isset($id_user) && $id_user !== '') {
+                        $editedParams[]         = "id_user";
+                        $draft->id_user  = $id_user;
                     }
+
                     if (isset($prioritas) && $prioritas !== '') {
                         $editedParams[]         = "prioritas";
                         $draft->prioritas    = $prioritas;

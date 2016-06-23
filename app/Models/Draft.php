@@ -16,11 +16,20 @@ class Draft extends Eloquent{
 
   public $timestamps    = true;
 
+  public function information(){
+      return $this->hasMany('App\Models\Information','_id', 'id_information');
+  }
+  public function feedback(){
+      return $this->hasMany('App\Models\Feedback','_id', 'id_feedback');
+  }
+
   public function location(){
       return $this->hasOne('App\Models\Location','_id', 'id_location');
   }
-  public function feedback(){
-      return $this->hasOne('App\Models\Feedback','_id', 'id_feedback');
+  public function user(){
+      return $this->hasOne('App\Models\User','_id', 'id_user');
   }
-
+  public function tag(){
+      return $this->hasMany('App\Models\Tag','_id', 'id_tag');
+  }
 }

@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-use App\Models\Tag;
-use App\Models\SKPD;
+use App\Models\Information;
+use App\Models\User;
 
-class TagController extends Controller {
+class InformationController extends Controller {
   /**
    * Display a listing of the resource.
    *
@@ -19,7 +19,7 @@ class TagController extends Controller {
       $response           = "OK";
       $statusCode         = 200;
       $result             = null;
-      $message            = "Mengambil semua data tag sukses.";
+      $message            = "Mengambil semua data informasi sukses.";
       $isError            = FALSE;
       $missingParams      = null;
 
@@ -29,7 +29,7 @@ class TagController extends Controller {
 
       if (!$isError) {
           try {
-              $result = Tag::take($limit)->skip($offset)->get();
+              $result = Information::take($limit)->skip($offset)->get();
 
           } catch (\Exception $e) {
               $response   = "FAILED";
@@ -67,17 +67,24 @@ class TagController extends Controller {
       $response           = "OK";
       $statusCode         = 200;
       $result             = null;
-      $message            = "Menyimpan data tag baru sukses.";
+      $message            = "Menyimpan data informasi baru sukses.";
       $isError            = FALSE;
       $missingParams      = null;
 
       $input              = $request->all();
-      $nama               = (isset($input['nama']))    ? $input['nama']   : null;
+      $message            = (isset($input['message']))          ? $input['message']      : null;
+      $tipeInformasi      = (isset($input['tipeInformasi']))    ? $input['tipeInformasi']: null;
+      $status             = (isset($input['status']))           ? $input['status']       : null;
 
-      if (!isset($nama) || $nama == '') {
-          $missingParams[] = "nama";
+      if (!isset($message) || $message == '') {
+          $missingParams[] = "message";
       }
-
+      if (!isset($tipeInformasi) || $tipeInformasi == '') {
+          $missingParams[] = "tipeInformasi";
+      }
+      if (!isset($status) || $status == '') {
+          $missingParams[] = "status";
+      }
       if (isset($missingParams)) {
           $isError    = TRUE;
           $response   = "FAILED";
@@ -87,17 +94,13 @@ class TagController extends Controller {
 
       if (!$isError) {
           try {
-              $checker      = Tag::where('nama', $nama)->first();
-
-              if (!$checker) {
-                  $tag   = Tag::create(array(
-                      'nama'     => $nama,
+                  $informasi   = Information::create(array(
+                      'message'         => $message,
+                      'tipeInformasi'   => $tipeInformasi,
+                      'status'          => $status,
                      ));
 
-                  $result['id']   = $tag->_id;
-              } else {
-                  throw new \Exception("Tag dengan nama $nama sudah terdaftar.");
-              }
+                  $result['id']   = $informasi->_id;
           } catch (\Exception $e) {
               $response   = "FAILED";
               $statusCode = 400;
@@ -125,16 +128,16 @@ class TagController extends Controller {
       $response           = "OK";
       $statusCode         = 200;
       $result             = null;
-      $message            = "Mengambil data tag dengan id $id sukses.";
+      $message            = "Mengambil data informasi dengan id $id sukses.";
       $isError            = FALSE;
       $missingParams      = null;
 
       if (!$isError) {
           try {
-              $result = Tag::where('_id', $id)->with(array('skpd'))->first();
+              $result = Information::where('_id', $id)->with('user')->first();
 
               if (!$result) {
-                  throw new \Exception("Tag dengan id $id tidak ditemukan.");
+                  throw new \Exception("Informasi dengan id $id tidak ditemukan.");
               } else {
 
               }
@@ -176,36 +179,42 @@ class TagController extends Controller {
       $response           = "OK";
       $statusCode         = 200;
       $result             = null;
-      $message            = "Menyunting data tag sukses.";
+      $message            = "Menyunting data informasi sukses.";
       $isError            = FALSE;
       $editedParams       = null;
 
       $input              = $request->all();
-      $nama               = (isset($input['nama']))    ? $input['nama']    : null;
-      $id_skpd            = (isset($input['id_skpd'])) ? $input['id_skpd'] : null;
+      $message            = (isset($input['message']))    ? $input['message']   : null;
+      $status             = (isset($input['status'])) ? $input['status']: null;
+      $id_user             = (isset($input['id_user'])) ? $input['id_user']: null;
 
       if (!$isError) {
           try {
-              $tag      = Tag::find($id);
+              $informasi    = Information::find($id);
 
-              if ($tag) {
-                  if (isset($nama) && $nama !== '') {
-                      $editedParams[]       = "nama";
-                      $tag->nama            = $nama;
+              if ($informasi) {
+                  if (isset($message) && $message !== '') {
+                      $editedParams[]       = "message";
+                      $informasi->push('archive_informasi',array('message' => $informasi->message, 'time' => \date("Y-m-d H:i:s")));
+                      $informasi->message      = $message;
                   }
-                  if (isset($id_skpd) && $id_skpd !== '') {
-                      $editedParams[]       = "id_skpd";
-                      $tag->id_skpd         = $id_skpd;
+                  if (isset($status) && $status !== '') {
+                      $editedParams[]       = "status";
+                      $informasi->status   = $status;
+                  }
+                  if (isset($id_user) && $id_user !== '') {
+                      $editedParams[]       = "id_user";
+                      $informasi->id_user   = $id_user;
                   }
 
                   if (isset($editedParams)) {
-                      $tag->save();
+                      $informasi->save();
                       $message    = $message." Data yang berubah : {".implode(', ', $editedParams)."}";
                   } else {
                       $message    = $message." Tidak ada data yang berubah.";
                   }
               } else {
-                  throw new \Exception("User dengan id $id tidak ditemukan.");
+                  throw new \Exception("Informasi dengan id $id tidak ditemukan.");
               }
           } catch (\Exception $e) {
               $response   = "FAILED";
@@ -235,16 +244,16 @@ class TagController extends Controller {
       $response           = "OK";
       $statusCode         = 200;
       $result             = null;
-      $message            = "Menghapus data tag dengan $id sukses.";
+      $message            = "Menghapus data informasi dengan $id sukses.";
       $isError            = FALSE;
       $missingParams      = null;
 
       if (!$isError) {
           try {
-              $tag      = Tag::find($id);
+              $informasi      = Information::find($id);
 
-              if ($tag) {
-                  $tag->delete();
+              if ($informasi) {
+                  $informasi->delete();
               } else {
                   throw new \Exception("User dengan id $id tidak ditemukan.");
               }

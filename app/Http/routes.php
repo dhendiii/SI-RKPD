@@ -33,6 +33,12 @@ $app->post('draft','DraftController@store');
 $app->put('draft/{id}','DraftController@update');
 $app->delete('draft/{id}','DraftController@destroy');
 
+$app->get('information','InformationController@index');
+$app->get('information/{id}','InformationController@show');
+$app->post('information','InformationController@store');
+$app->put('information/{id}','InformationController@update');
+$app->delete('information/{id}','InformationController@destroy');
+
 $app->get('feedback','FeedbackController@index');
 $app->get('feedback/{id}','FeedbackController@show');
 $app->post('feedback','FeedbackController@store');

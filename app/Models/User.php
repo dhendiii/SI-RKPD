@@ -10,13 +10,28 @@ class User extends Eloquent{
   use SoftDeletes;
 
   protected $collection = 'user';
-  protected $hidden     = array('created_at','updated_at','password','id_location');
+  protected $hidden     = array('created_at','updated_at','password');
   protected $dates      = array('deleted_at');
-  protected $fillable   = array('namaDepan','namaBelakang','noKTP','email','password','tipeUser','poin','lencana');
+  protected $fillable   = array('nama_depan','nama_belakang','no_ktp','email','password','user_tipe','user_poin','lencana','location_id');
 
   public $timestamps    = true;
 
   public function location(){
-      return $this->hasOne('App\Models\Location','_id', 'id_location');
+      return $this->hasOne('App\Models\Location','_id', 'location_id');
   }
+
+  public function getDraft(){
+      return Draft::whereIn('_id', $this->draft_id)->get();
+  }
+  public function getInformation(){
+      return Information::whereIn('_id', $this->information_id)->get();
+  }
+  public function getFeedback(){
+      return Feedback::whereIn('_id', $this->feedback_id)->get();
+  }
+
+
+  //hasMany draft
+  //hasMany information
+  //hasMany feedback
 }

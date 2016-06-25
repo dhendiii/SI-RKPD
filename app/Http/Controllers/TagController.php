@@ -72,7 +72,8 @@ class TagController extends Controller {
       $missingParams      = null;
 
       $input              = $request->all();
-      $nama               = (isset($input['nama']))    ? $input['nama']   : null;
+      $nama               = (isset($input['nama']))    ? $input['nama']           : null;
+      $skpd_id            = (isset($input['skpd_id'])) ? $input['skpd_id'] : null;
 
       if (!isset($nama) || $nama == '') {
           $missingParams[] = "nama";
@@ -92,6 +93,7 @@ class TagController extends Controller {
               if (!$checker) {
                   $tag   = Tag::create(array(
                       'nama'     => $nama,
+                      'skpd_id'  => json_decode($skpd_id, true),
                      ));
 
                   $result['id']   = $tag->_id;
@@ -131,7 +133,9 @@ class TagController extends Controller {
 
       if (!$isError) {
           try {
-              $result = Tag::where('_id', $id)->with(array('skpd'))->first();
+              $result = Tag::where('_id', $id)->first();
+              $result->skpd = $result->getSkpd();
+              unset($result->skpd_id);
 
               if (!$result) {
                   throw new \Exception("Tag dengan id $id tidak ditemukan.");
@@ -182,7 +186,7 @@ class TagController extends Controller {
 
       $input              = $request->all();
       $nama               = (isset($input['nama']))    ? $input['nama']    : null;
-      $id_skpd            = (isset($input['id_skpd'])) ? $input['id_skpd'] : null;
+      $skpd_id            = (isset($input['skpd_id'])) ? $input['skpd_id'] : null;
 
       if (!$isError) {
           try {
@@ -193,9 +197,11 @@ class TagController extends Controller {
                       $editedParams[]       = "nama";
                       $tag->nama            = $nama;
                   }
-                  if (isset($id_skpd) && $id_skpd !== '') {
-                      $editedParams[]       = "id_skpd";
-                      $tag->id_skpd         = $id_skpd;
+
+                  if (isset($skpd_id) && $skpd_id !== '') {
+                      $editedParams[]       = "skpd_id";
+                      $tag->push('skpd_id');
+                      //$tag->push('skpd_id', array('skpd_id' => $skpd_id));
                   }
 
                   if (isset($editedParams)) {

@@ -10,26 +10,26 @@ class Draft extends Eloquent{
   use SoftDeletes;
 
   protected $collection = 'draft';
-  protected $hidden     = array('updated_at','created_at','id_location','id_feedback');
+  protected $hidden     = array('updated_at','created_at');
   protected $dates      = array('deleted_at');
-  protected $fillable   = array('summary','tipeDraft','status','prioritas');
+  protected $fillable   = array('message','draft_tipe','status','prioritas',
+                          'location_id','information_id','feedback_id','tag_id');
 
   public $timestamps    = true;
 
   public function information(){
-      return $this->hasMany('App\Models\Information','_id', 'id_information');
+      return $this->hasMany('App\Models\Information','_id', 'information_id');
   }
   public function feedback(){
-      return $this->hasMany('App\Models\Feedback','_id', 'id_feedback');
+      return $this->hasMany('App\Models\Feedback','_id', 'feedback_id');
   }
-
   public function location(){
-      return $this->hasOne('App\Models\Location','_id', 'id_location');
+      return $this->hasOne('App\Models\Location','_id', 'location_id');
   }
   public function user(){
-      return $this->hasOne('App\Models\User','_id', 'id_user');
+      return $this->hasOne('App\Models\User','_id', 'user_id');
   }
   public function tag(){
-      return $this->hasMany('App\Models\Tag','_id', 'id_tag');
+      return $this->hasMany('App\Models\Tag','_id', 'tag_id');
   }
 }

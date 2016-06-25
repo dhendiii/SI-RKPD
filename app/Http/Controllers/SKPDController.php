@@ -71,14 +71,14 @@ class SKPDController extends Controller {
       $missingParams      = null;
 
       $input              = $request->all();
-      $namaPanjang        = (isset($input['namaPanjang']))    ? $input['namaPanjang']   : null;
-      $namaSingkat        = (isset($input['namaSingkat'])) ? $input['namaSingkat']: null;
+      $nama_lengkap        = (isset($input['nama_lengkap']))    ? $input['nama_lengkap']   : null;
+      $nama_singkat        = (isset($input['nama_singkat'])) ? $input['nama_singkat']: null;
 
-      if (!isset($namaPanjang) || $namaPanjang == '') {
-          $missingParams[] = "namaPanjang";
+      if (!isset($nama_lengkap) || $nama_lengkap == '') {
+          $missingParams[] = "nama_lengkap";
       }
-      if (!isset($namaSingkat) || $namaSingkat == '') {
-          $missingParams[] = "namaSingkat";
+      if (!isset($nama_singkat) || $nama_singkat == '') {
+          $missingParams[] = "nama_singkat";
       }
 
       if (isset($missingParams)) {
@@ -90,17 +90,17 @@ class SKPDController extends Controller {
 
       if (!$isError) {
           try {
-              $checker      = SKPD::where('namaPanjang', $namaPanjang)->first();
+              $checker      = SKPD::where('nama_lengkap', $nama_lengkap)->first();
 
               if (!$checker) {
                   $skpd   = SKPD::create(array(
-                      'namaPanjang'     => $namaPanjang,
-                      'namaSingkat'     => $namaSingkat,
+                      'nama_lengkap'     => $nama_lengkap,
+                      'nama_singkat'     => $nama_singkat,
                      ));
 
                   $result['id']   = $skpd->_id;
               } else {
-                  throw new \Exception("SKPD dengan nama $namaPanjang sudah terdaftar.");
+                  throw new \Exception("SKPD dengan nama $nama_lengkap sudah terdaftar.");
               }
           } catch (\Exception $e) {
               $response   = "FAILED";
@@ -135,7 +135,8 @@ class SKPDController extends Controller {
 
       if (!$isError) {
           try {
-              $result = SKPD::where('_id', $id)->first();
+              $result = SKPD::where('_id', $id)
+                        ->first();
 
               if (!$result) {
                   throw new \Exception("SKPD dengan id $id tidak ditemukan.");
@@ -185,21 +186,21 @@ class SKPDController extends Controller {
       $editedParams       = null;
 
       $input              = $request->all();
-      $namaPanjang        = (isset($input['namaPanjang']))    ? $input['namaPanjang']   : null;
-      $namaSingkat        = (isset($input['namaSingkat'])) ? $input['namaSingkat']: null;
+      $nama_lengkap        = (isset($input['nama_lengkap']))    ? $input['nama_lengkap']   : null;
+      $nama_singkat        = (isset($input['nama_singkat'])) ? $input['nama_singkat']: null;
 
       if (!$isError) {
           try {
               $skpd      = SKPD::find($id);
 
               if ($skpd) {
-                  if (isset($namaPanjang) && $namaPanjang !== '') {
-                      $editedParams[]       = "namaPanjang";
-                      $skpd->namaPanjang      = $namaPanjang;
+                  if (isset($nama_lengkap) && $nama_lengkap !== '') {
+                      $editedParams[]       = "nama_lengkap";
+                      $skpd->nama_lengkap      = $nama_lengkap;
                   }
-                  if (isset($namaSingkat) && $namaSingkat !== '') {
-                      $editedParams[]       = "namaSingkat";
-                      $skpd->namaSingkat   = $namaSingkat;
+                  if (isset($nama_singkat) && $nama_singkat !== '') {
+                      $editedParams[]       = "nama_singkat";
+                      $skpd->nama_singkat   = $nama_singkat;
                   }
 
                   if (isset($editedParams)) {

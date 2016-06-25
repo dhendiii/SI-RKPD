@@ -77,19 +77,28 @@ class DraftController extends Controller {
         $missingParams      = null;
 
         $input              = $request->all();
-        $summary            = (isset($input['summary']))      ? $input['summary']   : null;
-        $tipeDraft          = (isset($input['tipeDraft']))    ? $input['tipeDraft'] : null;
-        $status             = (isset($input['status']))       ? $input['status']    : null;
-        $prioritas          = (isset($input['prioritas']))    ? $input['prioritas'] : 0;
+        $message            = (isset($input['message']))      ? $input['message']    : null;
+        $draft_tipe         = (isset($input['draft_tipe']))   ? $input['draft_tipe'] : null;
+        $status             = (isset($input['status']))       ? $input['status']     : null;
+        $prioritas          = (isset($input['prioritas']))    ? $input['prioritas']  : 0;
+        $user_id            = (isset($input['user_id']))      ? $input['user_id']     : null;
+        $tag_id             = (isset($input['tag_id']))       ? $input['tag_id']     : null;
 
-        if (!isset($summary) || $summary == '') {
-            $missingParams[] = "summary";
+
+        if (!isset($message) || $message == '') {
+            $missingParams[] = "message";
         }
-        if (!isset($tipeDraft) || $tipeDraft == '') {
-            $missingParams[] = "tipeDraft";
+        if (!isset($draft_tipe) || $draft_tipe == '') {
+            $missingParams[] = "draft_tipe";
         }
         if (!isset($status) || $status == '') {
             $missingParams[] = "status";
+        }
+        if (!isset($user_id) || $user_id == '') {
+            $missingParams[] = "user_id";
+        }
+        if (!isset($tag_id) || $tag_id == '') {
+            $missingParams[] = "tag_id";
         }
 
         if (isset($missingParams)) {
@@ -102,10 +111,11 @@ class DraftController extends Controller {
         if (!$isError) {
             try {
                 $draft      = Draft::create(array(
-                        'summary'       => $summary,
-                        'tipeDraft'     => $tipeDraft,
+                        'message'       => $message,
+                        'draft_tipe'    => $draft_tipe,
                         'status'        => $status,
                         'prioritas'     => $prioritas,
+                        'tag_id'        => json_decode($tag_id, true),
                     ));
 
                     $result['id']   = $draft->_id;
@@ -144,11 +154,11 @@ class DraftController extends Controller {
         if (!$isError) {
             try {
                 $result = Draft::where('_id', $id)
-                          ->with(array('information'))
-                          ->with(array('feedback'))
-                          ->with(array('user'))
-                          ->with(array('location'))
-                          ->with(array('tag'))
+//                          ->with(array('information'))
+//                          ->with(array('feedback'))
+//                          ->with(array('user'))
+//                          ->with(array('location'))
+//                          ->with(array('tag'))
                           ->first();
 
                 if (!$result) {
@@ -200,13 +210,12 @@ class DraftController extends Controller {
         $editedParams       = null;
 
         $input              = $request->all();
-        $summary            = (isset($input['summary']))        ? $input['summary']         : null;
+        $message            = (isset($input['message']))        ? $input['message']         : null;
         $status             = (isset($input['status']))         ? $input['status']          : null;
-        $id_information     = (isset($input['id_information'])) ? $input['id_information']  : null;
-        $id_feedback        = (isset($input['id_feedback']))    ? $input['id_feedback']     : null;
-        $id_user            = (isset($input['id_user']))        ? $input['id_user']         : null;
-        $id_location        = (isset($input['id_location']))    ? $input['id_location']     : null;
-        $id_tag             = (isset($input['id_tag']))         ? $input['id_tag']          : null;
+        $information_id     = (isset($input['information_id'])) ? $input['information_id']  : null;
+        $feedback_id        = (isset($input['feedback_id']))    ? $input['feedback_id']     : null;
+        $location_id        = (isset($input['location_id']))    ? $input['location_id']     : null;
+        $tag_id             = (isset($input['tag_id']))         ? $input['tag_id']          : null;
         $priority           = (isset($input['prioritas']))      ? $input['prioritas']       : null;
 
 
@@ -215,37 +224,33 @@ class DraftController extends Controller {
                 $draft      = Draft::find($id);
 
                 if ($draft) {
-                    if (isset($summary) && $summary !== '') {
-                        $editedParams[]       = "summary";
-                        $draft->push('archive_draft',array('summary' => $draft->summary, 'time' => \date("Y-m-d H:i:s")));
-                        $draft->summary      = $summary;
+                    if (isset($message) && $message !== '') {
+                        $editedParams[]       = "message";
+                        $draft->push('archive_draft',array('message' => $draft->message, 'time' => \date("Y-m-d H:i:s")));
+                        $draft->message      = $message;
                     }
 
-                    if (isset($id_information) && $id_information !== '') {
-                        $editedParams[]       = "id_information";
-                        $draft->push('id_information', array('id_information' => $id_information));
+                    if (isset($information_id) && $information_id !== '') {
+                        $editedParams[]       = "information_id";
+                        $draft->push('information_id', array('information_id' => $information_id));
                     }
-                    if (isset($id_feedback) && $id_feedback !== '') {
-                        $editedParams[]       = "id_feedback";
-                        $draft->push('id_feedback', array('id_feedback' => $id_feedback));
+                    if (isset($feedback_id) && $feedback_id !== '') {
+                        $editedParams[]       = "feedback_id";
+                        $draft->push('feedback_id', array('feedback_id' => $feedback_id));
                     }
-                    if (isset($id_tag) && $id_tag !== '') {
-                        $editedParams[]       = "id_tag";
-                        $draft->push('id_tag', array('id_tag' => $id_tag));
+                    if (isset($tag_id) && $tag_id !== '') {
+                        $editedParams[]       = "tag_id";
+                        $draft->push('tag_id', array('tag_id' => $tag_id));
                     }
 
-                    if (isset($id_location) && $id_location !== '') {
-                        $editedParams[]         = "id_location";
-                        $draft->id_location  = $id_location;
-                    }
-                    if (isset($id_user) && $id_user !== '') {
-                        $editedParams[]         = "id_user";
-                        $draft->id_user  = $id_user;
+                    if (isset($location_id) && $location_id !== '') {
+                        $editedParams[]       = "location_id";
+                        $draft->location_id   = $location_id;
                     }
 
                     if (isset($prioritas) && $prioritas !== '') {
-                        $editedParams[]         = "prioritas";
-                        $draft->prioritas    = $prioritas;
+                        $editedParams[]       = "prioritas";
+                        $draft->prioritas     = $prioritas;
                     }
 
                     if (isset($editedParams)) {

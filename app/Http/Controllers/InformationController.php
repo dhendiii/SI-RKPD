@@ -73,18 +73,29 @@ class InformationController extends Controller {
 
       $input              = $request->all();
       $message            = (isset($input['message']))          ? $input['message']      : null;
-      $tipeInformasi      = (isset($input['tipeInformasi']))    ? $input['tipeInformasi']: null;
+      $informasi_tipe      = (isset($input['informasi_tipe']))    ? $input['informasi_tipe']: null;
       $status             = (isset($input['status']))           ? $input['status']       : null;
+      $user_id            = (isset($input['user_id']))     ? $input['user_id']     : null;
+      $draft_id           = (isset($input['draft_id']))     ? $input['draft_id']     : null;
+      $prioritas           = (isset($input['prioritas']))     ? $input['prioritas']     : 0;
 
       if (!isset($message) || $message == '') {
           $missingParams[] = "message";
       }
-      if (!isset($tipeInformasi) || $tipeInformasi == '') {
-          $missingParams[] = "tipeInformasi";
+      if (!isset($informasi_tipe) || $informasi_tipe == '') {
+          $missingParams[] = "informasi_tipe";
       }
       if (!isset($status) || $status == '') {
           $missingParams[] = "status";
       }
+      if (!isset($user_id) || $user_id == '') {
+          $missingParams[] = "user_id";
+      }
+      if (!isset($draft_id) || $draft_id == '') {
+          $missingParams[] = "draft_id";
+      }
+
+
       if (isset($missingParams)) {
           $isError    = TRUE;
           $response   = "FAILED";
@@ -96,8 +107,10 @@ class InformationController extends Controller {
           try {
                   $informasi   = Information::create(array(
                       'message'         => $message,
-                      'tipeInformasi'   => $tipeInformasi,
+                      'informasi_tipe'   => $informasi_tipe,
                       'status'          => $status,
+                      'user_id'          => $user_id,
+                      'draft_id'          => $draft_id,
                      ));
 
                   $result['id']   = $informasi->_id;
@@ -134,7 +147,9 @@ class InformationController extends Controller {
 
       if (!$isError) {
           try {
-              $result = Information::where('_id', $id)->with('user')->first();
+              $result = Information::where('_id', $id)
+                            //->with('user')
+                            ->first();
 
               if (!$result) {
                   throw new \Exception("Informasi dengan id $id tidak ditemukan.");
@@ -186,7 +201,7 @@ class InformationController extends Controller {
       $input              = $request->all();
       $message            = (isset($input['message']))    ? $input['message']   : null;
       $status             = (isset($input['status'])) ? $input['status']: null;
-      $id_user             = (isset($input['id_user'])) ? $input['id_user']: null;
+      $prioritas             = (isset($input['prioritas'])) ? $input['prioritas']: null;
 
       if (!$isError) {
           try {
@@ -202,9 +217,9 @@ class InformationController extends Controller {
                       $editedParams[]       = "status";
                       $informasi->status   = $status;
                   }
-                  if (isset($id_user) && $id_user !== '') {
-                      $editedParams[]       = "id_user";
-                      $informasi->id_user   = $id_user;
+                  if (isset($prioritas) && $prioritas !== '') {
+                      $editedParams[]       = "prioritas";
+                      $informasi->prioritas   = $prioritas;
                   }
 
                   if (isset($editedParams)) {

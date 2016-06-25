@@ -72,23 +72,23 @@ class UserController extends Controller {
       $missingParams      = null;
 
       $input              = $request->all();
-      $namaDepan          = (isset($input['namaDepan']))    ? $input['namaDepan']   : null;
-      $namaBelakang       = (isset($input['namaBelakang'])) ? $input['namaBelakang']: null;
-      $tipeUser           = (isset($input['tipeUser']))     ? $input['tipeUser']    : null;
-      $noKTP              = (isset($input['noKTP']))        ? $input['noKTP']       : null;
-      $email              = (isset($input['email']))        ? $input['email']       : null;
-      $password           = (isset($input['password']))     ? $input['password']    : null;
-      $poin               = (isset($input['poin']))         ? $input['poin']        : 0;
-      $lencana            = (isset($input['lencana']))      ? array($input['lencana'])     : array();
+      $nama_depan         = (isset($input['nama_depan']))    ? $input['nama_depan']     : null;
+      $nama_belakang      = (isset($input['nama_belakang'])) ? $input['nama_belakang']  : null;
+      $user_tipe          = (isset($input['user_tipe']))     ? $input['user_tipe']      : null;
+      $no_ktp             = (isset($input['no_ktp']))        ? $input['no_ktp']         : null;
+      $email              = (isset($input['email']))         ? $input['email']          : null;
+      $password           = (isset($input['password']))      ? $input['password']       : null;
+      $user_poin          = (isset($input['user_poin']))     ? $input['user_poin']      : 0;
+      $lencana            = (isset($input['lencana']))       ? array($input['lencana']) : array();
 
-      if (!isset($noKTP) || $noKTP == '') {
-          $missingParams[] = "noKTP";
+      if (!isset($no_ktp) || $no_ktp == '') {
+          $missingParams[] = "no_ktp";
       }
-      if (!isset($namaDepan) || $namaDepan == '') {
-          $missingParams[] = "namaDepan";
+      if (!isset($nama_depan) || $nama_depan == '') {
+          $missingParams[] = "nama_depan";
       }
-      if (!isset($tipeUser) || $tipeUser == '') {
-          $missingParams[] = "tipeUser";
+      if (!isset($user_tipe) || $user_tipe == '') {
+          $missingParams[] = "user_tipe";
       }
       if (!isset($email) || $email == '') {
           $missingParams[] = "email";
@@ -106,23 +106,23 @@ class UserController extends Controller {
 
       if (!$isError) {
           try {
-              $checker      = User::where('noKTP', $noKTP)->first();
+              $checker = User::where('no_ktp', $no_ktp)->first();
 
               if (!$checker) {
                   $user   = User::create(array(
-                      'namaDepan'       => $namaDepan,
-                      'namaBelakang'    => $namaBelakang,
-                      'tipeUser'        => $tipeUser,
-                      'noKTP'           => $noKTP,
+                      'nama_depan'      => $nama_depan,
+                      'nama_belakang'   => $nama_belakang,
+                      'user_tipe'       => $user_tipe,
+                      'no_ktp'          => $no_ktp,
                       'email'           => $email,
                       'password'        => $password,
-                      'poin'            => $poin,
+                      'user_poin'       => $user_poin,
                       'lencana'         => $lencana,
                   ));
 
                   $result['id']   = $user->_id;
               } else {
-                  throw new \Exception("User dengan nomor KTP $noKTP sudah terdaftar.");
+                  throw new \Exception("User dengan nomor KTP $no_ktp sudah terdaftar.");
               }
           } catch (\Exception $e) {
               $response   = "FAILED";
@@ -157,7 +157,15 @@ class UserController extends Controller {
 
       if (!$isError) {
           try {
-              $result = User::where('_id', $id)->with(array('location'))->first();
+              $result = User::where('_id', $id)->first();
+                    $result->draft = $result->getDraft();
+                    unset($result->draft_id);
+
+                    $result->information = $result->getInformation();
+                    unset($result->information_id);
+
+                    $result->feedback = $result->getFeedback();
+                    unset($result->feedback_id);
 
               if (!$result) {
                   throw new \Exception("User dengan id $id tidak ditemukan.");
@@ -207,36 +215,36 @@ class UserController extends Controller {
       $editedParams       = null;
 
       $input              = $request->all();
-      $namaDepan          = (isset($input['namaDepan']))    ? $input['namaDepan']   : null;
-      $namaBelakang       = (isset($input['namaBelakang'])) ? $input['namaBelakang']: null;
-      $tipeUser           = (isset($input['tipeUser']))     ? $input['tipeUser']    : null;
-      $noKTP              = (isset($input['noKTP']))        ? $input['noKTP']       : null;
-      $email              = (isset($input['email']))        ? $input['email']       : null;
-      $password           = (isset($input['password']))     ? $input['password']    : null;
-      $poin               = (isset($input['poin']))         ? $input['poin']        : null;
-      $lencana            = (isset($input['lencana']))      ? $input['lencana']     : null;
-      $id_location        = (isset($input['id_location']))  ? $input['id_location'] : null;
+      $nama_depan         = (isset($input['nama_depan']))       ? $input['nama_depan']      : null;
+      $nama_belakang      = (isset($input['nama_belakang']))    ? $input['nama_belakang']   : null;
+      $user_tipe          = (isset($input['user_tipe']))        ? $input['user_tipe']       : null;
+      $no_ktp             = (isset($input['no_ktp']))           ? $input['no_ktp']          : null;
+      $email              = (isset($input['email']))            ? $input['email']           : null;
+      $password           = (isset($input['password']))         ? $input['password']        : null;
+      $user_poin          = (isset($input['user_poin']))        ? $input['user_poin']       : null;
+      $lencana            = (isset($input['lencana']))          ? $input['lencana']         : null;
+      $location_id        = (isset($input['location_id']))      ? $input['location_id']     : null;
 
       if (!$isError) {
           try {
               $user      = User::find($id);
 
               if ($user) {
-                  if (isset($namaDepan) && $namaDepan !== '') {
-                      $editedParams[]       = "namaDepan";
-                      $user->namaDepan      = $namaDepan;
+                  if (isset($nama_depan) && $nama_depan !== '') {
+                      $editedParams[]       = "nama_depan";
+                      $user->nama_depan      = $nama_depan;
                   }
-                  if (isset($namaBelakang) && $namaBelakang !== '') {
-                      $editedParams[]       = "namaBelakang";
-                      $user->namaBelakang   = $namaBelakang;
+                  if (isset($nama_belakang) && $nama_belakang !== '') {
+                      $editedParams[]       = "nama_belakang";
+                      $user->nama_belakang   = $nama_belakang;
                   }
-                  if (isset($tipeUser) && $tipeUser !== '') {
-                      $editedParams[]       = "tipeUser";
-                      $user->tipeUser       = $tipeUser;
+                  if (isset($user_tipe) && $user_tipe !== '') {
+                      $editedParams[]       = "user_tipe";
+                      $user->user_tipe       = $user_tipe;
                   }
-                  if (isset($noKTP) && $noKTP !== '') {
-                      $editedParams[]       = "noKTP";
-                      $user->noKTP          = $noKTP;
+                  if (isset($no_ktp) && $no_ktp !== '') {
+                      $editedParams[]       = "no_ktp";
+                      $user->no_ktp          = $no_ktp;
                   }
                   if (isset($email) && $email !== '') {
                       $editedParams[]       = "email";
@@ -246,17 +254,17 @@ class UserController extends Controller {
                       $editedParams[]       = "password";
                       $user->password       = $password;
                   }
-                  if (isset($poin) && $poin !== '') {
-                      $editedParams[]       = "poin";
-                      $user->poin           = $poin;
+                  if (isset($user_poin) && $user_poin !== '') {
+                      $editedParams[]       = "user_poin";
+                      $user->user_poin           = $user_poin;
                   }
                   if (isset($lencana) && $lencana !== '') {
                       $editedParams[]       = "lencana";
                       $user->push('lencana', array('lencana' => $lencana, 'time' => \date("Y-m-d H:i:s")));
                   }
-                  if (isset($id_location) && $id_location !== '') {
-                      $editedParams[]       = "id_location";
-                      $user->id_location    = $id_location;
+                  if (isset($location_id) && $location_id !== '') {
+                      $editedParams[]       = "location_id";
+                      $user->location_id    = $location_id;
                   }
 
                   if (isset($editedParams)) {

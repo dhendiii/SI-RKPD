@@ -9,7 +9,12 @@ class SKPD extends Eloquent{
 
   protected $collection = 'skpd';
   protected $hidden     = array('updated_at','created_at');
-  protected $fillable   = array('namaPanjang','namaSingkat');
+  protected $fillable   = array('nama_lengkap','nama_singkat','tag_id');
 
   public $timestamps    = true;
+
+  //hasMany SKPD
+  public function tag(){
+      return $this->belongsTo('App\Models\Tag','tag_id');
+  }
 }

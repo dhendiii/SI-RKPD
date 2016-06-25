@@ -74,17 +74,28 @@ class FeedbackController extends Controller {
 
         $input              = $request->all();
         $message            = (isset($input['message']))    ? $input['message']  : null;
-        $tipeFeed           = (isset($input['tipeFeed']))   ? $input['tipeFeed']    : null;
+        $feed_tipe          = (isset($input['feed_tipe']))   ? $input['feed_tipe']    : null;
         $status             = (isset($input['status']))     ? $input['status']     : null;
+        $user_id            = (isset($input['user_id']))     ? $input['user_id']     : null;
+        $draft_id           = (isset($input['draft_id']))     ? $input['draft_id']     : null;
+
+
 
         if (!isset($message) || $message == '') {
             $missingParams[] = "message";
         }
-        if (!isset($tipeFeed) || $tipeFeed == '') {
-            $missingParams[] = "tipeFeed";
+        if (!isset($feed_tipe) || $feed_tipe == '') {
+            $missingParams[] = "feed_tipe";
         }
         if (!isset($status) || $status == '') {
             $missingParams[] = "status";
+        }
+
+        if (!isset($user_id) || $user_id == '') {
+            $missingParams[] = "user_id";
+        }
+        if (!isset($draft_id) || $draft_id == '') {
+            $missingParams[] = "draft_id";
         }
 
         if (isset($missingParams)) {
@@ -98,8 +109,10 @@ class FeedbackController extends Controller {
             try {
                 $feedback   = Feedback::create(array(
                     'message'           => $message,
-                    'tipeFeed'          => $tipeFeed,
+                    'feed_tipe'          => $feed_tipe,
                     'status'            => $status,
+                    'user_id'            => $user_id,
+                    'draft_id'            => $draft_id,
                 ));
 
                     $result['id']   = $feedback->_id;
@@ -137,7 +150,9 @@ class FeedbackController extends Controller {
 
         if (!$isError) {
             try {
-                $result = Feedback::where('_id', $id)->with('user')->first();
+                $result = Feedback::where('_id', $id)
+                            //->with('user')
+                            ->first();
 
                 if (!$result) {
                     throw new \Exception("Feedback dengan id $id tidak ditemukan.");
@@ -188,8 +203,7 @@ class FeedbackController extends Controller {
         $editedParams       = null;
 
         $input              = $request->all();
-        $status             = (isset($input['priority']))   ? $input['priority']    : null;
-        $id_user            = (isset($input['id_user'])) ? $input['id_user']: null;
+        $status             = (isset($input['status']))   ? $input['status']    : null;
 
         if (!$isError) {
             try {
@@ -199,10 +213,6 @@ class FeedbackController extends Controller {
                     if (isset($status) && $status !== '') {
                         $editedParams[]         = "status";
                         $feedback->status         = $status;
-                    }
-                    if (isset($id_user) && $id_user !== '') {
-                        $editedParams[]       = "id_user";
-                        $feedback->id_user   = $id_user;
                     }
 
                     if (isset($editedParams)) {
@@ -254,7 +264,7 @@ class FeedbackController extends Controller {
                 if ($feedback) {
                     $feedback->delete();
                 } else {
-                    throw new \Exception("Fee dengan id $id tidak ditemukan.");
+                    throw new \Exception("Feed dengan id $id tidak ditemukan.");
                 }
             } catch (\Exception $e) {
                 $response   = "FAILED";

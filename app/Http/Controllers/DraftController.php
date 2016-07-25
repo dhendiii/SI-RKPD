@@ -77,28 +77,43 @@ class DraftController extends Controller {
         $missingParams      = null;
 
         $input              = $request->all();
-        $message            = (isset($input['message']))      ? $input['message']    : null;
-        $draft_tipe         = (isset($input['draft_tipe']))   ? $input['draft_tipe'] : null;
-        $status             = (isset($input['status']))       ? $input['status']     : null;
-        $prioritas          = (isset($input['prioritas']))    ? $input['prioritas']  : 0;
-        $user_id            = (isset($input['user_id']))      ? $input['user_id']     : null;
-        $tag_id             = (isset($input['tag_id']))       ? $input['tag_id']     : null;
+
+        //inti
+        $kegiatan           = (isset($input['kegiatan']))       ? $input['kegiatan']        : null;
+        $draft_tipe         = (isset($input['draft_tipe']))     ? $input['draft_tipe']      : null;
+
+        // progress
+        $verifikasi         = (isset($input['verifikasi']))     ? $input['verifikasi']      : null;
+        $verifikasi_ket     = (isset($input['verifikasi_ket'])) ? $input['verifikasi_ket']  : null;
+        $hasilforum         = (isset($input['hasilforum']))     ? $input['hasilforum']      : null;
+        $hasilforum_ket     = (isset($input['hasilforum_ket'])) ? $input['hasilforum_ket']  : null;
+        $realisasi          = (isset($input['realisasi']))      ? $input['realisasi']       : FALSE;
+        $realisasi_th       = (isset($input['realisasi_th']))   ? $input['realisasi_th']    : null;
+
+        // vote
+        $like               = (isset($input['like']))           ? $input['like']            : 0;
+        $dislike            = (isset($input['dislike']))        ? $input['dislike']         : 0;
+
+        // foreign key
+        $tag_id             = (isset($input['tag_id']))         ? $input['tag_id']          : null;
+        $user_id            = (isset($input['user_id']))        ? $input['user_id']         : null;
+        $location_id        = (isset($input['location_id']))    ? $input['location_id']     : null;
 
 
-        if (!isset($message) || $message == '') {
-            $missingParams[] = "message";
+        if (!isset($kegiatan) || $kegiatan == '') {
+            $missingParams[] = "kegiatan";
         }
         if (!isset($draft_tipe) || $draft_tipe == '') {
             $missingParams[] = "draft_tipe";
-        }
-        if (!isset($status) || $status == '') {
-            $missingParams[] = "status";
         }
         if (!isset($user_id) || $user_id == '') {
             $missingParams[] = "user_id";
         }
         if (!isset($tag_id) || $tag_id == '') {
             $missingParams[] = "tag_id";
+        }
+        if (!isset($location_id) || $location_id == '') {
+            $missingParams[] = "location_id";
         }
 
         if (isset($missingParams)) {
@@ -111,11 +126,19 @@ class DraftController extends Controller {
         if (!$isError) {
             try {
                 $draft      = Draft::create(array(
-                        'message'       => $message,
-                        'draft_tipe'    => $draft_tipe,
-                        'status'        => $status,
-                        'prioritas'     => $prioritas,
-                        'tag_id'        => json_decode($tag_id, true),
+                        'kegiatan'          => $kegiatan,
+                        'draft_tipe'        => $draft_tipe,
+                        'verifikasi'        => $verifikasi,
+                        'verifikasi_ket'    => $verifikasi_ket,
+                        'hasilforum'        => $hasilforum,
+                        'hasilforum_ket'    => $hasilforum_ket,
+                        'realisasi'         => $realisasi,
+                        'realisasi_th'      => $realisasi_th,
+                        'like'              => $like,
+                        'dislike'           => $dislike,
+                        'tag_id'            => json_decode($tag_id, true),
+                        'user_id'           => $user_id,
+                        'location_id'       => $location_id,
                     ));
 
                     $result['id']   = $draft->_id;
@@ -210,13 +233,30 @@ class DraftController extends Controller {
         $editedParams       = null;
 
         $input              = $request->all();
-        $message            = (isset($input['message']))        ? $input['message']         : null;
-        $status             = (isset($input['status']))         ? $input['status']          : null;
-        $information_id     = (isset($input['information_id'])) ? $input['information_id']  : null;
-        $feedback_id        = (isset($input['feedback_id']))    ? $input['feedback_id']     : null;
-        $location_id        = (isset($input['location_id']))    ? $input['location_id']     : null;
+
+        //inti
+        $kegiatan           = (isset($input['kegiatan']))       ? $input['kegiatan']        : null;
+        $draft_tipe         = (isset($input['draft_tipe']))     ? $input['draft_tipe']      : null;
+
+        // progress
+        $verifikasi         = (isset($input['verifikasi']))     ? $input['verifikasi']      : null;
+        $verifikasi_ket     = (isset($input['verifikasi_ket'])) ? $input['verifikasi_ket']  : null;
+        $hasilforum         = (isset($input['hasilforum']))     ? $input['hasilforum']      : null;
+        $hasilforum_ket     = (isset($input['hasilforum_ket'])) ? $input['hasilforum_ket']  : null;
+        $realisasi          = (isset($input['realisasi']))      ? $input['realisasi']       : FALSE;
+        $realisasi_th       = (isset($input['realisasi_th']))   ? $input['realisasi_th']    : null;
+
+        // vote
+        $like               = (isset($input['like']))           ? $input['like']            : null;
+        $dislike            = (isset($input['dislike']))        ? $input['dislike']         : null;
+
+        // foreign key
         $tag_id             = (isset($input['tag_id']))         ? $input['tag_id']          : null;
-        $priority           = (isset($input['prioritas']))      ? $input['prioritas']       : null;
+        $user_id            = (isset($input['user_id']))        ? $input['user_id']         : null;
+        $location_id        = (isset($input['location_id']))    ? $input['location_id']     : null;
+
+        $feedback_id        = (isset($input['feedback_id']))    ? $input['feedback_id']     : null;
+        $information_id     = (isset($input['information_id'])) ? $input['information_id']  : null;
 
 
         if (!$isError) {
@@ -224,23 +264,59 @@ class DraftController extends Controller {
                 $draft      = Draft::find($id);
 
                 if ($draft) {
-                    if (isset($message) && $message !== '') {
-                        $editedParams[]       = "message";
-                        $draft->push('archive_draft',array('message' => $draft->message, 'time' => \date("Y-m-d H:i:s")));
-                        $draft->message      = $message;
+                    if (isset($kegiatan) && $kegiatan !== '') {
+                        $editedParams[]       = "kegiatan";
+                        $draft->push('archive_draft',array('kegiatan' => $draft->kegiatan, 'time' => \date("Y-m-d H:i:s")));
+                        $draft->kegiatan      = $kegiatan;
+                    }
+
+                    if (isset($verifikasi) && $verifikasi !== '') {
+                        $editedParams[]       = "verifikasi";
+                        $draft->verifikasi     = $verifikasi;
+                    }
+                    if (isset($verifikasi_ket) && $verifikasi_ket !== '') {
+                        $editedParams[]       = "verifikasi_ket";
+                        $draft->verifikasi_ket     = $verifikasi_ket;
+                    }
+                    if (isset($hasilforum) && $hasilforum !== '') {
+                        $editedParams[]       = "hasilforum";
+                        $draft->hasilforum     = $hasilforum;
+                    }
+                    if (isset($hasilforum_ket) && $hasilforum_ket !== '') {
+                        $editedParams[]       = "hasilforum_ket";
+                        $draft->hasilforum_ket     = $hasilforum_ket;
+                    }
+                    if (isset($realisasi) && $realisasi !== '') {
+                        $editedParams[]       = "realisasi";
+                        $draft->realisasi     = $realisasi;
+                    }
+                    if (isset($realisasi_th) && $realisasi_th !== '') {
+                        $editedParams[]       = "realisasi_th";
+                        $draft->realisasi_th     = $realisasi_th;
+                    }
+
+                    if (isset($like) && $like !== '') {
+                        $editedParams[]       = "like";
+                        $draft->like     = $like;
+                    }
+                    if (isset($dislike) && $dislike !== '') {
+                        $editedParams[]       = "dislike";
+                        $draft->dislike     = $dislike;
+                    }
+
+                    if (isset($tag_id) && $tag_id !== '') {
+                        $editedParams[]       = "tag_id";
+                        $draft->push('tag_id', array('tag_id' => $tag_id));
                     }
 
                     if (isset($information_id) && $information_id !== '') {
                         $editedParams[]       = "information_id";
                         $draft->push('information_id', array('information_id' => $information_id));
                     }
+
                     if (isset($feedback_id) && $feedback_id !== '') {
                         $editedParams[]       = "feedback_id";
                         $draft->push('feedback_id', array('feedback_id' => $feedback_id));
-                    }
-                    if (isset($tag_id) && $tag_id !== '') {
-                        $editedParams[]       = "tag_id";
-                        $draft->push('tag_id', array('tag_id' => $tag_id));
                     }
 
                     if (isset($location_id) && $location_id !== '') {
@@ -248,10 +324,6 @@ class DraftController extends Controller {
                         $draft->location_id   = $location_id;
                     }
 
-                    if (isset($prioritas) && $prioritas !== '') {
-                        $editedParams[]       = "prioritas";
-                        $draft->prioritas     = $prioritas;
-                    }
 
                     if (isset($editedParams)) {
                         $draft->save();

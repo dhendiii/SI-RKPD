@@ -72,21 +72,27 @@ class InformationController extends Controller {
       $missingParams      = null;
 
       $input              = $request->all();
-      $message            = (isset($input['message']))          ? $input['message']      : null;
-      $informasi_tipe      = (isset($input['informasi_tipe']))    ? $input['informasi_tipe']: null;
-      $status             = (isset($input['status']))           ? $input['status']       : null;
-      $user_id            = (isset($input['user_id']))     ? $input['user_id']     : null;
-      $draft_id           = (isset($input['draft_id']))     ? $input['draft_id']     : null;
-      $prioritas           = (isset($input['prioritas']))     ? $input['prioritas']     : 0;
 
-      if (!isset($message) || $message == '') {
-          $missingParams[] = "message";
+      $informasi_tipe     = (isset($input['informasi_tipe']))   ? $input['informasi_tipe']  : null;
+      $konten             = (isset($input['konten']))           ? $input['konten']          : null;
+
+      $jumlah             = (isset($input['jumlah']))           ? $input['jumlah']          : 0;
+      $satuan             = (isset($input['satuan']))           ? $input['satuan']          : null;
+
+      $like               = (isset($input['like']))             ? $input['like']            : 0;
+      $dislike            = (isset($input['dislike']))          ? $input['dislike']         : 0;
+
+      $verifikasi         = (isset($input['verifikasi']))       ? $input['verifikasi']      : null;
+      $verifikasi_ket     = (isset($input['verifikasi_ket']))   ? $input['verifikasi_ket']  : null;
+
+      $user_id            = (isset($input['user_id']))          ? $input['user_id']         : null;
+      $draft_id           = (isset($input['draft_id']))         ? $input['draft_id']        : null;
+
+      if (!isset($konten) || $konten == '') {
+          $missingParams[] = "konten";
       }
       if (!isset($informasi_tipe) || $informasi_tipe == '') {
           $missingParams[] = "informasi_tipe";
-      }
-      if (!isset($status) || $status == '') {
-          $missingParams[] = "status";
       }
       if (!isset($user_id) || $user_id == '') {
           $missingParams[] = "user_id";
@@ -106,11 +112,16 @@ class InformationController extends Controller {
       if (!$isError) {
           try {
                   $informasi   = Information::create(array(
-                      'message'         => $message,
-                      'informasi_tipe'   => $informasi_tipe,
-                      'status'          => $status,
-                      'user_id'          => $user_id,
-                      'draft_id'          => $draft_id,
+                      'informasi_tipe'  => $informasi_tipe,
+                      'konten'          => $konten,
+                      'jumlah'          => $jumlah,
+                      'satuan'          => $satuan,
+                      'like'            => $like,
+                      'dislike'         => $dislike,
+                      'verifikasi'      => $verifikasi,
+                      'verifikasi_ket'  => $verifikasi_ket,
+                      'user_id'         => $user_id,
+                      'draft_id'        => $draft_id,
                      ));
 
                   $result['id']   = $informasi->_id;
@@ -199,34 +210,61 @@ class InformationController extends Controller {
       $editedParams       = null;
 
       $input              = $request->all();
-      $message            = (isset($input['message']))    ? $input['message']   : null;
-      $status             = (isset($input['status'])) ? $input['status']: null;
-      $prioritas             = (isset($input['prioritas'])) ? $input['prioritas']: null;
+
+      $konten             = (isset($input['konten']))           ? $input['konten']          : null;
+
+      $jumlah             = (isset($input['jumlah']))           ? $input['jumlah']          : 0;
+      $satuan             = (isset($input['satuan']))           ? $input['satuan']          : null;
+
+      $like               = (isset($input['like']))             ? $input['like']            : 0;
+      $dislike            = (isset($input['dislike']))          ? $input['dislike']         : 0;
+
+      $verifikasi         = (isset($input['verifikasi']))       ? $input['verifikasi']      : null;
+      $verifikasi_ket     = (isset($input['verifikasi_ket']))   ? $input['verifikasi_ket']  : null;
+
 
       if (!$isError) {
           try {
               $informasi    = Information::find($id);
 
               if ($informasi) {
-                  if (isset($message) && $message !== '') {
-                      $editedParams[]       = "message";
-                      $informasi->push('archive_informasi',array('message' => $informasi->message, 'time' => \date("Y-m-d H:i:s")));
-                      $informasi->message      = $message;
+                  if (isset($konten) && $konten !== '') {
+                      $editedParams[]       = "konten";
+                      $informasi->push('archive_informasi',array('konten' => $informasi->konten, 'time' => \date("Y-m-d H:i:s")));
+                      $informasi->konten      = $konten;
                   }
-                  if (isset($status) && $status !== '') {
-                      $editedParams[]       = "status";
-                      $informasi->status   = $status;
+                  if (isset($jumlah) && $jumlah !== '') {
+                      $editedParams[]       = "jumlah";
+                      $informasi->jumlah   = $jumlah;
                   }
-                  if (isset($prioritas) && $prioritas !== '') {
-                      $editedParams[]       = "prioritas";
-                      $informasi->prioritas   = $prioritas;
+                  if (isset($satuan) && $satuan !== '') {
+                      $editedParams[]       = "satuan";
+                      $informasi->satuan   = $satuan;
+                  }
+
+                  if (isset($like) && $like !== '') {
+                      $editedParams[]       = "like";
+                      $informasi->like   = $like;
+                  }
+                  if (isset($dislike) && $dislike !== '') {
+                      $editedParams[]       = "dislike";
+                      $informasi->dislike   = $dislike;
+                  }
+
+                  if (isset($verifikasi) && $verifikasi !== '') {
+                      $editedParams[]       = "verifikasi";
+                      $informasi->verifikasi   = $verifikasi;
+                  }
+                  if (isset($verifikasi_ket) && $verifikasi_ket !== '') {
+                      $editedParams[]       = "verifikasi_ket";
+                      $informasi->verifikasi_ket   = $verifikasi_ket;
                   }
 
                   if (isset($editedParams)) {
                       $informasi->save();
-                      $message    = $message." Data yang berubah : {".implode(', ', $editedParams)."}";
+                      $konten    = $konten." Data yang berubah : {".implode(', ', $editedParams)."}";
                   } else {
-                      $message    = $message." Tidak ada data yang berubah.";
+                      $konten    = $konten." Tidak ada data yang berubah.";
                   }
               } else {
                   throw new \Exception("Informasi dengan id $id tidak ditemukan.");

@@ -73,22 +73,19 @@ class FeedbackController extends Controller {
         $missingParams      = null;
 
         $input              = $request->all();
-        $message            = (isset($input['message']))    ? $input['message']  : null;
-        $feed_tipe          = (isset($input['feed_tipe']))   ? $input['feed_tipe']    : null;
-        $status             = (isset($input['status']))     ? $input['status']     : null;
-        $user_id            = (isset($input['user_id']))     ? $input['user_id']     : null;
-        $draft_id           = (isset($input['draft_id']))     ? $input['draft_id']     : null;
+        $konten             = (isset($input['konten']))     ? $input['konten']      : null;
+        $feed_tipe          = (isset($input['feed_tipe']))  ? $input['feed_tipe']   : null;
+        $status             = (isset($input['status']))     ? $input['status']      : null;
+        $user_id            = (isset($input['user_id']))    ? $input['user_id']     : null;
+        $draft_id           = (isset($input['draft_id']))   ? $input['draft_id']    : null;
 
 
 
-        if (!isset($message) || $message == '') {
-            $missingParams[] = "message";
+        if (!isset($konten) || $konten == '') {
+            $missingParams[] = "konten";
         }
         if (!isset($feed_tipe) || $feed_tipe == '') {
             $missingParams[] = "feed_tipe";
-        }
-        if (!isset($status) || $status == '') {
-            $missingParams[] = "status";
         }
 
         if (!isset($user_id) || $user_id == '') {
@@ -108,11 +105,11 @@ class FeedbackController extends Controller {
         if (!$isError) {
             try {
                 $feedback   = Feedback::create(array(
-                    'message'           => $message,
-                    'feed_tipe'          => $feed_tipe,
-                    'status'            => $status,
-                    'user_id'            => $user_id,
-                    'draft_id'            => $draft_id,
+                    'konten'        => $konten,
+                    'feed_tipe'     => $feed_tipe,
+                    'status'        => $status,
+                    'user_id'       => $user_id,
+                    'draft_id'      => $draft_id,
                 ));
 
                     $result['id']   = $feedback->_id;

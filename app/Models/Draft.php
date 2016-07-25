@@ -12,8 +12,10 @@ class Draft extends Eloquent{
   protected $collection = 'draft';
   protected $hidden     = array('updated_at','created_at');
   protected $dates      = array('deleted_at');
-  protected $fillable   = array('message','draft_tipe','status','prioritas',
-                          'location_id','information_id','feedback_id','tag_id');
+  protected $fillable   = array('kegiatan','draft_tipe','verifikasi','verifikasi_ket',
+                                'hasilforum','hasilforum_ket','realisasi','realisasi_th',
+                                'like','dislike','tag_id','location_id','user_id',
+                                'information_id','feedback_id');
 
   public $timestamps    = true;
 

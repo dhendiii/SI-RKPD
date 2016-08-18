@@ -91,7 +91,7 @@ return [
             'password' => env('DB_PASSWORD', ''),
             'prefix'   => env('DB_PREFIX', ''),
         ],
-        
+
         'mongodb' => array(
             'driver'   => 'mongodb',
             'host'     => env('DB_HOST', 'localhost'),

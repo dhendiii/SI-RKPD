@@ -12,7 +12,10 @@ class User extends Eloquent{
   protected $collection = 'user';
   protected $hidden     = array('created_at','updated_at','password');
   protected $dates      = array('deleted_at');
-  protected $fillable   = array('nama_depan','nama_belakang','no_ktp','email','password','user_tipe','user_poin','lencana','location_id');
+  protected $fillable   = array('nama_depan','nama_belakang','no_ktp','email','no_hp',
+                                'password','user_tipe','no_ktp','skpd','skpd_role',
+                                'lokasi_detail','lokasi_kelurahan', 'lokasi_kecamatan',
+                                'user_poin','lencana');
 
   public $timestamps    = true;
 

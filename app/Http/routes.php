@@ -26,6 +26,7 @@ $app->get('user/{id}','UserController@show');
 $app->post('user','UserController@store');
 $app->put('user/{id}','UserController@update');
 $app->delete('user/{id}','UserController@destroy');
+$app->post('user/auth','UserController@login');
 
 $app->get('draft','DraftController@index');
 $app->get('draft/{id}','DraftController@show');

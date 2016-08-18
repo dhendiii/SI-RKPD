@@ -85,6 +85,8 @@ $app->singleton(
 $app->register('Jenssegers\Mongodb\MongodbServiceProvider');
 $app->withEloquent();
 
+$app->register('Barryvdh\Cors\LumenServiceProvider');
+$app->configure('cors');
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes

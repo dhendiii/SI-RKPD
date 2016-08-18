@@ -14,7 +14,8 @@ class Draft extends Eloquent{
   protected $dates      = array('deleted_at');
   protected $fillable   = array('kegiatan','draft_tipe','verifikasi','verifikasi_ket',
                                 'hasilforum','hasilforum_ket','realisasi','realisasi_th',
-                                'like','dislike','tag_id','location_id','user_id',
+                                'lokasi_detail','lokasi_kelurahan','lokasi_kecamatan',
+                                'like','dislike','tag_id','user_id',
                                 'information_id','feedback_id');
 
   public $timestamps    = true;

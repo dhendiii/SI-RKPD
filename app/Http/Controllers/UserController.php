@@ -150,7 +150,7 @@ class UserController extends Controller {
                       'lencana'             => json_decode($lencana, true),
                   ));
 
-                  $result['id']   = $user->_id;
+                //   $result['id']   = $user->_id;
 
                   $result   = array(
                       '_id'                 => $user->_id,

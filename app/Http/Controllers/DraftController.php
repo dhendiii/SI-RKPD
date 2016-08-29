@@ -33,7 +33,7 @@ class DraftController extends Controller {
 
         if (!$isError) {
             try {
-                $result = Draft::take($limit)->skip($offset)->get();
+                $result = Draft::with(array('user'))->take($limit)->skip($offset)->get();
 
             } catch (\Exception $e) {
                 $response   = "FAILED";
@@ -99,6 +99,8 @@ class DraftController extends Controller {
         // vote
         $like               = (isset($input['like']))               ? $input['like']                : 0;
         $dislike            = (isset($input['dislike']))            ? $input['dislike']             : 0;
+        $like_users         = (isset($input['like_users']))         ? $input['like_users']          : null;
+        $dislike_users      = (isset($input['dislike_users']))      ? $input['dislike_users']       : null;
 
         // foreign key
         $tags               = (isset($input['tags']))               ? $input['tags']                : null;
@@ -114,9 +116,6 @@ class DraftController extends Controller {
         }
         if (!isset($user_id) || $user_id == '') {
             $missingParams[] = "user_id";
-        }
-        if (!isset($tags) || $tags == '') {
-            $missingParams[] = "tags";
         }
         if (!isset($lokasi_cakupan) || $lokasi_cakupan == '') {
             $missingParams[] = "lokasi_cakupan";
@@ -146,13 +145,21 @@ class DraftController extends Controller {
                         'lokasi_kecamatan'  => $lokasi_kecamatan,
                         'like'              => $like,
                         'dislike'           => $dislike,
-                        // 'tags'              => json_decode($tags, true),
-                        'tags'              => $tags,
+                        'like_users'        => array($like_users),
+                        'dislike_users'     => array($dislike_users),
+                        'skpd'              => $skpd,
+                        'tags'              => json_decode($tags, true),
+                        // 'tags'              => $tags,
                         'user_id'           => $user_id,
                         // 'location_id'       => $location_id,
                     ));
 
-                    $result['id']   = $draft->_id;
+                    // $result['id']   = $draft->_id;
+                    $result   = array(
+                        '_id'                 => $draft->_id,
+                        'draft_tipe'          => $draft->draft_tipe,
+                    );
+
             } catch (\Exception $e) {
                 $response   = "FAILED";
                 $statusCode = 400;
@@ -188,12 +195,15 @@ class DraftController extends Controller {
         if (!$isError) {
             try {
                 $result = Draft::where('_id', $id)
-//                          ->with(array('information'))
-//                          ->with(array('feedback'))
-//                          ->with(array('user'))
+                         ->with(array('information'))
+                         ->with(array('feedback'))
+                         ->with(array('user'))
 //                          ->with(array('location'))
 //                          ->with(array('tag'))
                           ->first();
+
+                        //   $result = Draft::with(array('user'))->take($limit)->skip($offset)->get();
+
 
                 if (!$result) {
                     throw new \Exception("Draft dengan id $id tidak ditemukan.");
@@ -260,14 +270,19 @@ class DraftController extends Controller {
         // vote
         $like               = (isset($input['like']))           ? $input['like']                    : null;
         $dislike            = (isset($input['dislike']))        ? $input['dislike']                 : null;
+        $like_users         = (isset($input['like_users']))     ? $input['like_users']              : null;
+        $dislike_users      = (isset($input['dislike_users']))  ? $input['dislike_users']           : null;
 
         // lokasi
+        $lokasi_cakupan     = (isset($input['lokasi_cakupan']))     ? $input['lokasi_cakupan']      : null;
         $lokasi_detail      = (isset($input['lokasi_detail']))      ? $input['lokasi_detail']       : null;
         $lokasi_kelurahan   = (isset($input['lokasi_kelurahan']))   ? $input['lokasi_kelurahan']    : null;
         $lokasi_kecamatan   = (isset($input['lokasi_kecamatan']))   ? $input['lokasi_kecamatan']    : null;
 
         // foreign key
         $tags               = (isset($input['tags']))           ? $input['tags']                    : null;
+        $skpd               = (isset($input['skpd']))           ? $input['skpd']                    : null;
+
         $user_id            = (isset($input['user_id']))        ? $input['user_id']                 : null;
 
         $feedback_id        = (isset($input['feedback_id']))    ? $input['feedback_id']             : null;
@@ -283,6 +298,10 @@ class DraftController extends Controller {
                         $editedParams[]       = "kegiatan";
                         $draft->push('archive_draft',array('kegiatan' => $draft->kegiatan, 'time' => \date("Y-m-d H:i:s")));
                         $draft->kegiatan      = $kegiatan;
+                    }
+                    if (isset($draft_tipe) && $draft_tipe !== '') {
+                        $editedParams[]       = "draft_tipe";
+                        $draft->draft_tipe     = $draft_tipe;
                     }
 
                     if (isset($verifikasi) && $verifikasi !== '') {
@@ -310,18 +329,72 @@ class DraftController extends Controller {
                         $draft->realisasi_th     = $realisasi_th;
                     }
 
-                    if (isset($like) && $like !== '') {
-                        $editedParams[]       = "like";
-                        $draft->like     = $like;
+                    if (isset($like_users) && $like_users !== '') {
+                        if (!in_array($like_users, $draft->like_users)) {
+                            $editedParams[]       = "like";
+
+                            if (in_array($like_users, $draft->dislike_users)) {
+                                $draft->decrement("dislike");
+                                $draft->pull('dislike_users', $like_users);
+                            }
+
+                            $draft->increment("like");
+                            $draft->push('like_users', $like_users);
+
+                            $result = array(
+                                'like'      => $draft->like,
+                                'dislike'   => $draft->dislike,
+                            );
+                        }
                     }
-                    if (isset($dislike) && $dislike !== '') {
-                        $editedParams[]       = "dislike";
-                        $draft->dislike     = $dislike;
+                    if (isset($dislike_users) && $dislike_users !== '') {
+                        if (!in_array($dislike_users, $draft->dislike_users)) {
+                            $editedParams[]       = "dislike";
+
+                            if (in_array($dislike_users, $draft->like_users)) {
+                                $draft->decrement("like");
+                                $draft->pull('like_users', $dislike_users);
+                            }
+
+                            $draft->increment("dislike");
+                            $draft->push('dislike_users', $dislike_users);
+
+                            $result = array(
+                                'like'      => $draft->like,
+                                'dislike'   => $draft->dislike,
+                            );
+                        }
+                    }
+                    // if (isset($like_users) && $like_users !== '') {
+                    //     $editedParams[]       = "like_users";
+                    //     $draft->push('like_users', array('like_users' => $like_users));
+                    // }
+                    // if (isset($dislike_users) && $dislike_users !== '') {
+                    //     $editedParams[]       = "dislike_users";
+                    //     $draft->push('dislike_users', array('dislike_users' => $dislike_users));
+                    // }
+
+                    if (isset($lokasi_cakupan) && $lokasi_cakupan !== '') {
+                        $editedParams[]       = "lokasi_cakupan";
+                        $draft->lokasi_cakupan     = $lokasi_cakupan;
+                    }
+                    if (isset($lokasi_detail) && $lokasi_detail !== '') {
+                        $editedParams[]       = "lokasi_detail";
+                        $draft->lokasi_detail     = $lokasi_detail;
+                    }
+                    if (isset($lokasi_kelurahan) && $lokasi_kelurahan !== '') {
+                        $editedParams[]       = "lokasi_kelurahan";
+                        $draft->lokasi_kelurahan     = $lokasi_kelurahan;
+                    }
+                    if (isset($lokasi_kecamatan) && $lokasi_kecamatan !== '') {
+                        $editedParams[]       = "lokasi_kecamatan";
+                        $draft->lokasi_kecamatan     = $lokasi_kecamatan;
                     }
 
                     if (isset($tags) && $tags !== '') {
                         $editedParams[]       = "tags";
                         $draft->push('tags', array('tags' => $tags));
+                        // $draft->tags          = json_decode($tags, true);
                     }
 
                     if (isset($information_id) && $information_id !== '') {
@@ -417,4 +490,43 @@ class DraftController extends Controller {
         return  response()->json($returnData, $statusCode)->header('access-control-allow-origin', '*');
     }
 
+    public function tags() {
+        $returnData         = array();
+        $response           = "OK";
+        $statusCode         = 200;
+        $result             = null;
+        $message            = "mengambil semua tags sukses.";
+        $isError            = FALSE;
+        $missingParams      = null;
+
+        if (!$isError) {
+            try {
+                // {$match : {tags : {$ne : null}}}, { $unwind: "$tags" }, {$group : {_id : '$tags'}}
+                $tags       = Draft::raw(function($collection) {
+                    return $collection->aggregate(array(
+                        array('$match'  => array('tags' => array('$ne' => 'null'))),
+                        array('$unwind' => '$tags'),
+                        array('$group'  => array('_id'  => '$tags')),
+                        // array('$group'  => array('_id'  => 1, 'result' => array('$addToSet' => '$tags')))
+                    ));
+                });
+
+                $result     = $tags;
+
+            } catch (\Exception $e) {
+                $response   = "FAILED";
+                $statusCode = 400;
+                $message    = $e->getMessage()." on line: " . $e->getLine();
+            }
+        }
+
+        $returnData = array(
+            'response'      => $response,
+            'status_code'   => $statusCode,
+            'message'       => $message,
+            'result'        => $result
+        );
+
+        return  response()->json($returnData, $statusCode)->header('access-control-allow-origin', '*');
+    }
 }

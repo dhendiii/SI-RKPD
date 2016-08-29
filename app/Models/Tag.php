@@ -9,7 +9,7 @@ class Tag extends Eloquent{
 
   protected $collection = 'tag';
   protected $hidden     = array('updated_at','created_at');
-  protected $fillable   = array('nama','skpd_id');
+  protected $fillable   = array('tag','skpd_id');
 
   public $timestamps    = true;
 

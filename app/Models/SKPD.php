@@ -9,7 +9,7 @@ class SKPD extends Eloquent{
 
   protected $collection = 'skpd';
   protected $hidden     = array('updated_at','created_at');
-  protected $fillable   = array('nama_lengkap','nama_singkat','tag_id');
+  protected $fillable   = array('nama', 'tags');
 
   public $timestamps    = true;
 

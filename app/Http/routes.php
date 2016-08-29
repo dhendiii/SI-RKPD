@@ -28,6 +28,8 @@ $app->put('user/{id}','UserController@update');
 $app->delete('user/{id}','UserController@destroy');
 $app->post('user/auth','UserController@login');
 
+$app->get('draft/tags','DraftController@tags');
+
 $app->get('draft','DraftController@index');
 $app->get('draft/{id}','DraftController@show');
 $app->post('draft','DraftController@store');
@@ -39,6 +41,7 @@ $app->get('informasi/{id}','InformationController@show');
 $app->post('informasi','InformationController@store');
 $app->put('informasi/{id}','InformationController@update');
 $app->delete('informasi/{id}','InformationController@destroy');
+$app->post('cobaupload','InformationController@uploadFoto');
 
 $app->get('timbalbalik','FeedbackController@index');
 $app->get('timbalbalik/{id}','FeedbackController@show');

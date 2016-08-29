@@ -12,8 +12,12 @@ class Feedback extends Eloquent{
   protected $collection = 'feedback';
   protected $hidden     = array('updated_at','created_at');
   protected $dates      = array('deleted_at');
-  protected $fillable   = array('message','feed_tipe','status','draft_id',
-                            'user_id');
+  // protected $fillable   = array('message','feed_tipe','status','draft_id',
+  //                           'user_id');
+  protected $fillable   = array('konten', 'tipe', 'status', 'status_ket',
+                                'like', 'dislike', 'draft_id', 'user_id',
+                                );
+
 
   public $timestamps    = true;
 

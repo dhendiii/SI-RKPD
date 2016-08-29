@@ -72,11 +72,11 @@ class TagController extends Controller {
       $missingParams      = null;
 
       $input              = $request->all();
-      $nama               = (isset($input['nama']))    ? $input['nama']           : null;
-      $skpd_id            = (isset($input['skpd_id'])) ? $input['skpd_id'] : null;
+      $tag                = (isset($input['tag']))      ? $input['tag']             : null;
+    //   $skpd_id            = (isset($input['skpd_id']))  ? $input['skpd_id']         : null;
 
-      if (!isset($nama) || $nama == '') {
-          $missingParams[] = "nama";
+      if (!isset($tag) || $tag == '') {
+          $missingParams[] = "tag";
       }
 
       if (isset($missingParams)) {
@@ -88,17 +88,17 @@ class TagController extends Controller {
 
       if (!$isError) {
           try {
-              $checker      = Tag::where('nama', $nama)->first();
+              $checker      = Tag::where('tag', $tag)->first();
 
               if (!$checker) {
                   $tag   = Tag::create(array(
-                      'nama'     => $nama,
-                      'skpd_id'  => json_decode($skpd_id, true),
+                      'tag'     => $tag,
+                    //   'skpd_id'  => json_decode($skpd_id, true),
                      ));
 
                   $result['id']   = $tag->_id;
               } else {
-                  throw new \Exception("Tag dengan nama $nama sudah terdaftar.");
+                  throw new \Exception("Tag : $tag sudah terdaftar.");
               }
           } catch (\Exception $e) {
               $response   = "FAILED";
@@ -122,23 +122,23 @@ class TagController extends Controller {
    * @param  int  $id
    * @return Response
    */
-  public function show($id) {
+  public function show($tag) {
       $returnData         = array();
       $response           = "OK";
       $statusCode         = 200;
       $result             = null;
-      $message            = "Mengambil data tag dengan id $id sukses.";
+      $message            = "Mengambil data tag dengan id $tag sukses.";
       $isError            = FALSE;
       $missingParams      = null;
 
       if (!$isError) {
           try {
-              $result = Tag::where('_id', $id)->first();
+              $result = Tag::where('tag', $tag)->first();
               $result->skpd = $result->getSkpd();
               unset($result->skpd_id);
 
               if (!$result) {
-                  throw new \Exception("Tag dengan id $id tidak ditemukan.");
+                  throw new \Exception("Tag dengan id $tag tidak ditemukan.");
               } else {
 
               }
@@ -185,23 +185,24 @@ class TagController extends Controller {
       $editedParams       = null;
 
       $input              = $request->all();
-      $nama               = (isset($input['nama']))    ? $input['nama']    : null;
-      $skpd_id            = (isset($input['skpd_id'])) ? $input['skpd_id'] : null;
+      $tag                = (isset($input['tag']))          ? $input['tag']     : null;
+      $skpd_id            = (isset($input['skpd_id']))      ? $input['skpd_id'] : null;
 
       if (!$isError) {
           try {
               $tag      = Tag::find($id);
 
               if ($tag) {
-                  if (isset($nama) && $nama !== '') {
-                      $editedParams[]       = "nama";
-                      $tag->nama            = $nama;
+                  if (isset($tag) && $tag !== '') {
+                      $editedParams[]       = "tag";
+                      $tag->tag             = $tag;
                   }
 
                   if (isset($skpd_id) && $skpd_id !== '') {
                       $editedParams[]       = "skpd_id";
                       $tag->push('skpd_id');
                       //$tag->push('skpd_id', array('skpd_id' => $skpd_id));
+                      //   'skpd_id'  => json_decode($skpd_id, true),
                   }
 
                   if (isset($editedParams)) {

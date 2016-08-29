@@ -71,14 +71,11 @@ class SKPDController extends Controller {
       $missingParams      = null;
 
       $input              = $request->all();
-      $nama_lengkap        = (isset($input['nama_lengkap']))    ? $input['nama_lengkap']   : null;
-      $nama_singkat        = (isset($input['nama_singkat'])) ? $input['nama_singkat']: null;
+      $nama       = (isset($input['nama']))     ? $input['nama']    : null;
+      $tags               = (isset($input['tags']))             ? $input['tags']            : null;
 
-      if (!isset($nama_lengkap) || $nama_lengkap == '') {
-          $missingParams[] = "nama_lengkap";
-      }
-      if (!isset($nama_singkat) || $nama_singkat == '') {
-          $missingParams[] = "nama_singkat";
+      if (!isset($nama) || $nama == '') {
+          $missingParams[] = "nama";
       }
 
       if (isset($missingParams)) {
@@ -90,17 +87,17 @@ class SKPDController extends Controller {
 
       if (!$isError) {
           try {
-              $checker      = SKPD::where('nama_lengkap', $nama_lengkap)->first();
+              $checker      = SKPD::where('nama', $nama)->first();
 
               if (!$checker) {
                   $skpd   = SKPD::create(array(
-                      'nama_lengkap'     => $nama_lengkap,
-                      'nama_singkat'     => $nama_singkat,
+                      'nama'    => $nama,
+                      'tags'            => json_decode($tags, true),
                      ));
 
                   $result['id']   = $skpd->_id;
               } else {
-                  throw new \Exception("SKPD dengan nama $nama_lengkap sudah terdaftar.");
+                  throw new \Exception("SKPD dengan nama $nama sudah terdaftar.");
               }
           } catch (\Exception $e) {
               $response   = "FAILED";
@@ -186,21 +183,21 @@ class SKPDController extends Controller {
       $editedParams       = null;
 
       $input              = $request->all();
-      $nama_lengkap        = (isset($input['nama_lengkap']))    ? $input['nama_lengkap']   : null;
-      $nama_singkat        = (isset($input['nama_singkat'])) ? $input['nama_singkat']: null;
+      $nama       = (isset($input['nama']))     ? $input['nama']    : null;
+      $tags               = (isset($input['tags']))             ? $input['tags']            : null;
 
       if (!$isError) {
           try {
               $skpd      = SKPD::find($id);
 
               if ($skpd) {
-                  if (isset($nama_lengkap) && $nama_lengkap !== '') {
-                      $editedParams[]       = "nama_lengkap";
-                      $skpd->nama_lengkap      = $nama_lengkap;
+                  if (isset($nama) && $nama !== '') {
+                      $editedParams[]       = "nama";
+                      $skpd->nama      = $nama;
                   }
-                  if (isset($nama_singkat) && $nama_singkat !== '') {
-                      $editedParams[]       = "nama_singkat";
-                      $skpd->nama_singkat   = $nama_singkat;
+                  if (isset($tags) && $tags !== '') {
+                      $editedParams[]       = "tags";
+                      $draft->tags          = json_decode($tags, true);
                   }
 
                   if (isset($editedParams)) {

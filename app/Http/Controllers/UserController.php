@@ -157,6 +157,7 @@ class UserController extends Controller {
                       'nama_depan'          => $user->nama_depan,
                       'nama_belakang'       => $user->nama_belakang,
                       'user_tipe'           => $user->user_tipe,
+                      'skpd'                => $user->skpd,
                   );
 
 
@@ -426,6 +427,8 @@ class UserController extends Controller {
                           'nama_depan'      => $emailOK->nama_depan,
                           'nama_belakang'   => $emailOK->nama_belakang,
                           'user_tipe'       => $emailOK->user_tipe,
+                          'skpd'            => $emailOK->skpd,
+
                       );
                   } else {
                       throw new \Exception("Username dan password tidak cocok.");

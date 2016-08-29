@@ -73,19 +73,24 @@ class FeedbackController extends Controller {
         $missingParams      = null;
 
         $input              = $request->all();
+
         $konten             = (isset($input['konten']))     ? $input['konten']      : null;
-        $feed_tipe          = (isset($input['feed_tipe']))  ? $input['feed_tipe']   : null;
+        $tipe               = (isset($input['tipe']))       ? $input['tipe']        : null;
+
         $status             = (isset($input['status']))     ? $input['status']      : null;
+        $status_ket         = (isset($input['status_ket'])) ? $input['status_ket']  : null;
+
+        $like               = (isset($input['like']))       ? $input['like']        : 0;
+        $dislike            = (isset($input['dislike']))    ? $input['dislike']     : 0;
+
         $user_id            = (isset($input['user_id']))    ? $input['user_id']     : null;
         $draft_id           = (isset($input['draft_id']))   ? $input['draft_id']    : null;
-
-
 
         if (!isset($konten) || $konten == '') {
             $missingParams[] = "konten";
         }
-        if (!isset($feed_tipe) || $feed_tipe == '') {
-            $missingParams[] = "feed_tipe";
+        if (!isset($tipe) || $tipe == '') {
+            $missingParams[] = "tipe";
         }
 
         if (!isset($user_id) || $user_id == '') {
@@ -106,8 +111,11 @@ class FeedbackController extends Controller {
             try {
                 $feedback   = Feedback::create(array(
                     'konten'        => $konten,
-                    'feed_tipe'     => $feed_tipe,
+                    'tipe'          => $tipe,
                     'status'        => $status,
+                    'status_ket'    => $status_ket,
+                    'like'          => $like,
+                    'dislike'       => $dislike,
                     'user_id'       => $user_id,
                     'draft_id'      => $draft_id,
                 ));
@@ -200,7 +208,10 @@ class FeedbackController extends Controller {
         $editedParams       = null;
 
         $input              = $request->all();
-        $status             = (isset($input['status']))   ? $input['status']    : null;
+        $status             = (isset($input['status']))         ? $input['status']          : null;
+        $status_ket         = (isset($input['status_ket']))     ? $input['status_ket']      : null;
+        $like               = (isset($input['like']))           ? $input['like']            : null;
+        $dislike            = (isset($input['dislike']))        ? $input['dislike']         : null;
 
         if (!$isError) {
             try {
@@ -210,6 +221,18 @@ class FeedbackController extends Controller {
                     if (isset($status) && $status !== '') {
                         $editedParams[]         = "status";
                         $feedback->status         = $status;
+                    }
+                    if (isset($status_ket) && $status_ket !== '') {
+                        $editedParams[]         = "status_ket";
+                        $feedback->status_ket         = $status_ket;
+                    }
+                    if (isset($like) && $like !== '') {
+                        $editedParams[]         = "like";
+                        $feedback->like         = $like;
+                    }
+                    if (isset($dislike) && $dislike !== '') {
+                        $editedParams[]         = "dislike";
+                        $feedback->dislike         = $dislike;
                     }
 
                     if (isset($editedParams)) {

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 use App\Models\User;
+use App\Models\Draft;
 use App\Models\Feedback;
 
 class FeedbackController extends Controller {
@@ -74,17 +75,22 @@ class FeedbackController extends Controller {
 
         $input              = $request->all();
 
-        $konten             = (isset($input['konten']))     ? $input['konten']      : null;
-        $tipe               = (isset($input['tipe']))       ? $input['tipe']        : null;
+        $konten             = (isset($input['konten']))             ? $input['konten']              : null;
+        $foto               = ($request->hasFile('foto'))           ? $request->file('foto')        : null;
+        $proposal           = ($request->hasFile('proposal'))       ? $request->file('proposal')    : null;
 
-        $status             = (isset($input['status']))     ? $input['status']      : null;
-        $status_ket         = (isset($input['status_ket'])) ? $input['status_ket']  : null;
+        $tipe               = (isset($input['tipe']))               ? $input['tipe']                : null;
 
-        $like               = (isset($input['like']))       ? $input['like']        : 0;
-        $dislike            = (isset($input['dislike']))    ? $input['dislike']     : 0;
+        $status             = (isset($input['status']))             ? $input['status']              : null;
+        $status_ket         = (isset($input['status_ket']))         ? $input['status_ket']          : null;
 
-        $user_id            = (isset($input['user_id']))    ? $input['user_id']     : null;
-        $draft_id           = (isset($input['draft_id']))   ? $input['draft_id']    : null;
+        $like               = (isset($input['like']))               ? $input['like']                : 0;
+        $dislike            = (isset($input['dislike']))            ? $input['dislike']             : 0;
+        $like_users         = (isset($input['like_users']))         ? $input['like_users']          : null;
+        $dislike_users      = (isset($input['dislike_users']))      ? $input['dislike_users']       : null;
+
+        $user_id            = (isset($input['user_id']))            ? $input['user_id']             : null;
+        $draft_id           = (isset($input['draft_id']))           ? $input['draft_id']            : null;
 
         if (!isset($konten) || $konten == '') {
             $missingParams[] = "konten";
@@ -110,17 +116,47 @@ class FeedbackController extends Controller {
         if (!$isError) {
             try {
                 $feedback   = Feedback::create(array(
-                    'konten'        => $konten,
-                    'tipe'          => $tipe,
-                    'status'        => $status,
-                    'status_ket'    => $status_ket,
-                    'like'          => $like,
-                    'dislike'       => $dislike,
-                    'user_id'       => $user_id,
-                    'draft_id'      => $draft_id,
+                    'konten'            => $konten,
+                    'tipe'              => $tipe,
+                    'status'            => $status,
+                    'status_ket'        => $status_ket,
+                    'like'              => $like,
+                    'dislike'           => $dislike,
+                    'like_users'        => array($like_users),
+                    'dislike_users'     => array($dislike_users),
+                    'user_id'           => $user_id,
+                    'draft_id'          => $draft_id,
                 ));
 
-                    $result['id']   = $feedback->_id;
+                if ($foto) {
+                    $extension = $foto->getClientOriginalExtension();
+                    if (in_array($extension, array('jpg', 'png', 'jpeg', 'JPG', 'PNG', 'JPEG'))){
+                        $random_name    = substr( "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" ,mt_rand( 0 ,51 ) ,1 ) .substr( \md5( \time() ), 1);
+
+                        $uploadedDest   = 'images/'.$feedback->_id;
+                        $uploadedName   = $random_name.'.'.$extension;
+
+                        $foto->move($uploadedDest, $uploadedName);
+                        $feedback->foto   = $uploadedDest.'/'.$uploadedName;
+                        $feedback->save();
+                    }
+                }
+
+                if ($proposal) {
+                    $extension  = $proposal->getClientOriginalExtension();
+                    if (in_array($extension,  array('pdf', 'doc','docx', 'PDF', 'DOC', 'DOCX',))) {
+                        $random_name    = substr( "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" ,mt_rand( 0 ,51 ) ,1 ) .substr( \md5( \time() ), 1);
+                        $uploadedDest   = 'docs/'.$feedback->_id;
+                        $uploadedName   = $random_name.'.'.$extension;
+
+                        $proposal->move($uploadedDest, $uploadedName);
+                        $feedback->proposal   = $uploadedDest.'/'.$uploadedName;
+                        $feedback->save();
+                    }
+                }
+
+                $result = $feedback;
+
             } catch (\Exception $e) {
                 $response   = "FAILED";
                 $statusCode = 400;
@@ -156,7 +192,7 @@ class FeedbackController extends Controller {
         if (!$isError) {
             try {
                 $result = Feedback::where('_id', $id)
-                            //->with('user')
+                            ->with(array('user'))
                             ->first();
 
                 if (!$result) {
@@ -207,11 +243,15 @@ class FeedbackController extends Controller {
         $isError            = FALSE;
         $editedParams       = null;
 
-        $input              = $request->all();
-        $status             = (isset($input['status']))         ? $input['status']          : null;
-        $status_ket         = (isset($input['status_ket']))     ? $input['status_ket']      : null;
-        $like               = (isset($input['like']))           ? $input['like']            : null;
-        $dislike            = (isset($input['dislike']))        ? $input['dislike']         : null;
+        $input                      = $request->all();
+        $status                     = (isset($input['status']))                 ? $input['status']              : null;
+        $status_ket                 = (isset($input['status_ket']))             ? $input['status_ket']          : null;
+        $like                       = (isset($input['like']))                   ? $input['like']                : null;
+        $dislike                    = (isset($input['dislike']))                ? $input['dislike']             : null;
+        $like_users                 = (isset($input['like_users']))             ? $input['like_users']          : null;
+        $dislike_users              = (isset($input['dislike_users']))          ? $input['dislike_users']       : null;
+        $foto                       = ($request->hasFile('foto'))               ? $request->file('foto')        : null;
+        $proposal                   = ($request->hasFile('proposal'))           ? $request->file('proposal')    : null;
 
         if (!$isError) {
             try {
@@ -233,6 +273,71 @@ class FeedbackController extends Controller {
                     if (isset($dislike) && $dislike !== '') {
                         $editedParams[]         = "dislike";
                         $feedback->dislike         = $dislike;
+                    }
+
+                    if (isset($like_users) && $like_users !== '') {
+                        if (!in_array($like_users, $feedback->like_users)) {
+                            $editedParams[]       = "like";
+
+                            if (in_array($like_users, $feedback->dislike_users)) {
+                                $feedback->decrement("dislike");
+                                $feedback->pull('dislike_users', $like_users);
+                            }
+
+                            $feedback->increment("like");
+                            $feedback->push('like_users', $like_users);
+
+                            $result = array(
+                                'like'      => $feedback->like,
+                                'dislike'   => $feedback->dislike,
+                            );
+                        }
+                    }
+
+                    if (isset($dislike_users) && $dislike_users !== '') {
+                        if (!in_array($dislike_users, $feedback->dislike_users)) {
+                            $editedParams[]       = "dislike";
+
+                            if (in_array($dislike_users, $feedback->like_users)) {
+                                $feedback->decrement("like");
+                                $feedback->pull('like_users', $dislike_users);
+                            }
+
+                            $feedback->increment("dislike");
+                            $feedback->push('dislike_users', $dislike_users);
+
+                            $result = array(
+                                'like'      => $feedback->like,
+                                'dislike'   => $feedback->dislike,
+                            );
+                        }
+                    }
+
+                    if ($foto) {
+                        $extension  = $foto->getClientOriginalExtension();
+                        if (in_array($extension, array('jpg', 'jpeg','png', 'JPG', 'JPEG', 'PNG',))) {
+                            $editedParams[] = "foto";
+                            if (file_exists($feedback->foto)) { unlink($feedback->foto); }
+
+                            $uploadedDest   = 'images/'.$id;
+                            $uploadedName   = 'foto.'.$extension;
+
+                            $foto->move($uploadedDest, $uploadedName);
+                            $feedback->foto   = $uploadedDest.'/'.$uploadedName;
+                        }
+                    }
+                    if ($proposal) {
+                        $extension  = $proposal->getClientOriginalExtension();
+                        if (in_array($extension, array('pdf', 'doc','docx', 'PDF', 'DOC', 'DOCX',))) {
+                            $editedParams[] = "proposal";
+                            if (file_exists($feedback->proposal)) { unlink($feedback->proposal); }
+
+                            $uploadedDest   = 'images/'.$id;
+                            $uploadedName   = 'proposal.'.$extension;
+
+                            $proposal->move($uploadedDest, $uploadedName);
+                            $feedback->proposal   = $uploadedDest.'/'.$uploadedName;
+                        }
                     }
 
                     if (isset($editedParams)) {

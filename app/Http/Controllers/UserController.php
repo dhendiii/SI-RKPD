@@ -197,10 +197,15 @@ class UserController extends Controller {
 
       if (!$isError) {
           try {
-              $result = User::where('_id', $id)->first();
+              $result = User::where('_id', $id)
+                        ->with(array('draft'))
+                        ->first();
+
+
+
             //   $result->draft = $result->getDraft();
             //   unset($result->draft_id);
-            //
+
             //   $result->information = $result->getInformation();
             //   unset($result->information_id);
               //

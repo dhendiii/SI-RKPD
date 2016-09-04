@@ -43,11 +43,11 @@ $app->put('informasi/{id}','InformationController@update');
 $app->delete('informasi/{id}','InformationController@destroy');
 $app->post('cobaupload','InformationController@uploadFoto');
 
-$app->get('timbalbalik','FeedbackController@index');
-$app->get('timbalbalik/{id}','FeedbackController@show');
-$app->post('timbalbalik','FeedbackController@store');
-$app->put('timbalbalik/{id}','FeedbackController@update');
-$app->delete('timbalbalik/{id}','FeedbackController@destroy');
+$app->get('feedback','FeedbackController@index');
+$app->get('feedback/{id}','FeedbackController@show');
+$app->post('feedback','FeedbackController@store');
+$app->put('feedback/{id}','FeedbackController@update');
+$app->delete('feedback/{id}','FeedbackController@destroy');
 
 $app->get('skpd','SKPDController@index');
 $app->get('skpd/{id}','SKPDController@show');
@@ -60,3 +60,6 @@ $app->get('tag/{id}','TagController@show');
 $app->post('tag','TagController@store');
 $app->put('tag/{id}','TagController@update');
 $app->delete('tag/{id}','TagController@destroy');
+
+$app->patch('debug','DraftController@whereIn');
+$app->post('uploadfiles','DraftController@uploadFiles');

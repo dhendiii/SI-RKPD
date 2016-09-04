@@ -33,7 +33,10 @@ class DraftController extends Controller {
 
         if (!$isError) {
             try {
-                $result = Draft::with(array('user'))->take($limit)->skip($offset)->get();
+                $result = Draft::with(array('user'))
+
+                                ->take($limit)->skip($offset)->get();
+
 
             } catch (\Exception $e) {
                 $response   = "FAILED";
@@ -79,32 +82,58 @@ class DraftController extends Controller {
         $input              = $request->all();
 
         //inti
-        $kegiatan           = (isset($input['kegiatan']))           ? $input['kegiatan']            : null;
-        $draft_tipe         = (isset($input['draft_tipe']))         ? $input['draft_tipe']          : null;
+        $kegiatan               = (isset($input['kegiatan']))               ? $input['kegiatan']               : null;
+        $draft_tipe             = (isset($input['draft_tipe']))             ? $input['draft_tipe']             : null;
 
         // progress
-        $verifikasi         = (isset($input['verifikasi']))         ? $input['verifikasi']          : null;
-        $verifikasi_ket     = (isset($input['verifikasi_ket']))     ? $input['verifikasi_ket']      : null;
-        $hasilforum         = (isset($input['hasilforum']))         ? $input['hasilforum']          : null;
-        $hasilforum_ket     = (isset($input['hasilforum_ket']))     ? $input['hasilforum_ket']      : null;
-        $realisasi          = (isset($input['realisasi']))          ? $input['realisasi']           : null;
-        $realisasi_th       = (isset($input['realisasi_th']))       ? $input['realisasi_th']        : null;
+        $verifikasi             = (isset($input['verifikasi']))             ? $input['verifikasi']             : null;
+        $verifikasi_ket         = (isset($input['verifikasi_ket']))         ? $input['verifikasi_ket']         : null;
+        $hasilforum             = (isset($input['hasilforum']))             ? $input['hasilforum']             : null;
+        $hasilforum_ket         = (isset($input['hasilforum_ket']))         ? $input['hasilforum_ket']         : null;
+        $realisasi              = (isset($input['realisasi']))              ? $input['realisasi']              : null;
+        $realisasi_th           = (isset($input['realisasi_th']))           ? $input['realisasi_th']           : null;
 
         // lokasi
-        $lokasi_cakupan     = (isset($input['lokasi_cakupan']))     ? $input['lokasi_cakupan']      : null;
-        $lokasi_detail      = (isset($input['lokasi_detail']))      ? $input['lokasi_detail']       : null;
-        $lokasi_kelurahan   = (isset($input['lokasi_kelurahan']))   ? $input['lokasi_kelurahan']    : null;
-        $lokasi_kecamatan   = (isset($input['lokasi_kecamatan']))   ? $input['lokasi_kecamatan']    : null;
+        $lokasi_cakupan         = (isset($input['lokasi_cakupan']))         ? $input['lokasi_cakupan']         : null;
+        $lokasi_detail          = (isset($input['lokasi_detail']))          ? $input['lokasi_detail']          : null;
+        $lokasi_kelurahan       = (isset($input['lokasi_kelurahan']))       ? $input['lokasi_kelurahan']       : null;
+        $lokasi_kecamatan       = (isset($input['lokasi_kecamatan']))       ? $input['lokasi_kecamatan']       : null;
 
         // vote
-        $like               = (isset($input['like']))               ? $input['like']                : 0;
-        $dislike            = (isset($input['dislike']))            ? $input['dislike']             : 0;
-        $like_users         = (isset($input['like_users']))         ? $input['like_users']          : null;
-        $dislike_users      = (isset($input['dislike_users']))      ? $input['dislike_users']       : null;
+        $like                   = (isset($input['like']))                   ? $input['like']                   : 0;
+        $dislike                = (isset($input['dislike']))                ? $input['dislike']                : 0;
+        $like_users             = (isset($input['like_users']))             ? $input['like_users']             : null;
+        $dislike_users          = (isset($input['dislike_users']))          ? $input['dislike_users']          : null;
+
+        //tags and skpd
+        $tags                   = (isset($input['tags']))                   ? $input['tags']                   : null;
+        $skpd                   = (isset($input['skpd']))                   ? $input['skpd']                   : null;
+
+        //informasi
+        $ikp_konten             = (isset($input['ikp_konten']))             ? $input['ikp_konten']             : null;
+        $ikp_jumlah             = (isset($input['ikp_jumlah']))             ? $input['ikp_jumlah']             : null;
+        $ikp_unit               = (isset($input['ikp_unit']))               ? $input['ikp_unit']               : null;
+        $ikp_verifikasi         = (isset($input['ikp_verifikasi']))         ? $input['ikp_verifikasi']         : null;
+        $ikp_verket             = (isset($input['ikp_verket']))             ? $input['ikp_verket']             : null;
+
+        $anggaran               = (isset($input['anggaran']))               ? $input['anggaran']               : null;
+        $anggaran_verifikasi    = (isset($input['anggaran_verifikasi']))    ? $input['anggaran_verifikasi']    : null;
+        $anggaran_verket        = (isset($input['anggaran_verket']))        ? $input['anggaran_verket']        : null;
+        $sumberanggaran         = (isset($input['sumberanggaran']))         ? $input['sumberanggaran']         : null;
+
+        $jeniskegiatan          = (isset($input['jeniskegiatan']))          ? $input['jeniskegiatan']          : null;
+        $keterangan             = (isset($input['keterangan']))             ? $input['keterangan']             : null;
+
+        $foto_verifikasi        = (isset($input['foto_verifikasi']))        ? $input['foto_verifikasi']        : null;
+        $foto_verket            = (isset($input['foto_verket']))            ? $input['foto_verket']            : null;
+
+        $proposal_verifikasi    = (isset($input['proposal_verifikasi']))    ? $input['proposal_verifikasi']    : null;
+        $proposal_verket        = (isset($input['proposal_verket']))        ? $input['proposal_verket']        : null;
+
+        $foto                   = ($request->hasFile('foto'))               ? $request->file('foto')           : null;
+        $proposal               = ($request->hasFile('proposal'))           ? $request->file('proposal')       : null;
 
         // foreign key
-        $tags               = (isset($input['tags']))               ? $input['tags']                : null;
-        $skpd               = (isset($input['skpd']))               ? $input['skpd']                : null;
         $user_id            = (isset($input['user_id']))            ? $input['user_id']             : null;
 
 
@@ -131,28 +160,78 @@ class DraftController extends Controller {
         if (!$isError) {
             try {
                 $draft      = Draft::create(array(
-                        'kegiatan'          => $kegiatan,
-                        'draft_tipe'        => $draft_tipe,
-                        'verifikasi'        => $verifikasi,
-                        'verifikasi_ket'    => $verifikasi_ket,
-                        'hasilforum'        => $hasilforum,
-                        'hasilforum_ket'    => $hasilforum_ket,
-                        'realisasi'         => $realisasi,
-                        'realisasi_th'      => $realisasi_th,
-                        'lokasi_cakupan'    => $lokasi_cakupan,
-                        'lokasi_detail'     => $lokasi_detail,
-                        'lokasi_kelurahan'  => $lokasi_kelurahan,
-                        'lokasi_kecamatan'  => $lokasi_kecamatan,
-                        'like'              => $like,
-                        'dislike'           => $dislike,
-                        'like_users'        => array($like_users),
-                        'dislike_users'     => array($dislike_users),
-                        'skpd'              => $skpd,
-                        'tags'              => json_decode($tags, true),
-                        // 'tags'              => $tags,
-                        'user_id'           => $user_id,
-                        // 'location_id'       => $location_id,
+                        'kegiatan'              => $kegiatan,
+                        'draft_tipe'            => $draft_tipe,
+                        'verifikasi'            => $verifikasi,
+                        'verifikasi_ket'        => $verifikasi_ket,
+                        'hasilforum'            => $hasilforum,
+                        'hasilforum_ket'        => $hasilforum_ket,
+                        'realisasi'             => $realisasi,
+                        'realisasi_th'          => $realisasi_th,
+                        'lokasi_cakupan'        => $lokasi_cakupan,
+                        'lokasi_detail'         => $lokasi_detail,
+                        'lokasi_kelurahan'      => $lokasi_kelurahan,
+                        'lokasi_kecamatan'      => $lokasi_kecamatan,
+                        'like'                  => $like,
+                        'dislike'               => $dislike,
+                        'like_users'            => array($like_users),
+                        'dislike_users'         => array($dislike_users),
+                        'skpd'                  => $skpd,
+                        'tags'                  => json_decode($tags, true),
+                        'ikp_konten'            => $ikp_konten,
+                        'ikp_jumlah'            => $ikp_jumlah,
+                        'ikp_unit'              => $ikp_unit,
+                        'ikp_verifikasi'        => $ikp_verifikasi,
+                        'ikp_verket'            => $ikp_verket,
+                        'anggaran'              => $anggaran,
+                        'anggaran_verifikasi'   => $anggaran_verifikasi,
+                        'anggaran_verket'       => $anggaran_verket,
+                        'sumberanggaran'        => $sumberanggaran,
+                        'jeniskegiatan'         => $jeniskegiatan,
+                        'keterangan'            => $keterangan,
+                        'foto_verifikasi'       => $foto_verifikasi,
+                        'foto_verket'           => $foto_verket,
+                        'proposal_verifikasi'   => $proposal_verifikasi,
+                        'proposal_verket'       => $proposal_verket,
+                        'foto'                  => null,
+                        'proposal'              => null,
+                        'user_id'               => $user_id,
                     ));
+
+                    if ($foto) {
+                        $foto_list = [];
+                        foreach ($foto as $key => $value) {
+                            # code...
+                            $extension = $value->getClientOriginalExtension();
+                            if (in_array($extension, array('jpg', 'png', 'jpeg', 'JPG', 'PNG', 'JPEG',))){
+                                $random_name    = substr( "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" ,mt_rand( 0 ,51 ) ,1 ) .substr( \md5( \time() ), 1);
+
+                                $uploadedDest   = 'images/'.$draft->_id;
+                                $uploadedName   = $random_name.'.'.$extension;
+
+                                $value->move($uploadedDest, $uploadedName);
+
+                                $foto_list[]   = $uploadedDest.'/'.$uploadedName;
+                            }
+                        }
+                        $draft->foto   = $foto_list;
+                        $draft->save();
+                    }
+
+                    if ($proposal) {
+                        $extension  = $proposal->getClientOriginalExtension();
+                        if (in_array($extension,  array('pdf', 'doc','docx', 'PDF', 'DOC', 'DOCX',))) {
+                            $random_name    = substr( "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" ,mt_rand( 0 ,51 ) ,1 ) .substr( \md5( \time() ), 1);
+
+                            $uploadedDest   = 'docs/'.$draft->_id;
+                            $uploadedName   = $random_name.'.'.$extension;
+
+                            $proposal->move($uploadedDest, $uploadedName);
+
+                            $draft->proposal   = $uploadedDest.'/'.$uploadedName;
+                            $draft->save();
+                        }
+                    }
 
                     // $result['id']   = $draft->_id;
                     $result   = array(
@@ -195,15 +274,14 @@ class DraftController extends Controller {
         if (!$isError) {
             try {
                 $result = Draft::where('_id', $id)
-                         ->with(array('information'))
-                         ->with(array('feedback'))
-                         ->with(array('user'))
-//                          ->with(array('location'))
-//                          ->with(array('tag'))
-                          ->first();
+                            ->with(array('user'))
+                        //  ->with(array('information'))
+                        //  ->with(array('feedback'))
+                            ->first();
 
                         //   $result = Draft::with(array('user'))->take($limit)->skip($offset)->get();
 
+                        $result->feedback   = $result->getFeedback();
 
                 if (!$result) {
                     throw new \Exception("Draft dengan id $id tidak ditemukan.");
@@ -256,37 +334,60 @@ class DraftController extends Controller {
         $input              = $request->all();
 
         //inti
-        $kegiatan           = (isset($input['kegiatan']))       ? $input['kegiatan']                : null;
-        $draft_tipe         = (isset($input['draft_tipe']))     ? $input['draft_tipe']              : null;
+        $kegiatan                   = (isset($input['kegiatan']))               ? $input['kegiatan']                : null;
+        $draft_tipe                 = (isset($input['draft_tipe']))             ? $input['draft_tipe']              : null;
 
         // progress
-        $verifikasi         = (isset($input['verifikasi']))     ? $input['verifikasi']              : null;
-        $verifikasi_ket     = (isset($input['verifikasi_ket'])) ? $input['verifikasi_ket']          : null;
-        $hasilforum         = (isset($input['hasilforum']))     ? $input['hasilforum']              : null;
-        $hasilforum_ket     = (isset($input['hasilforum_ket'])) ? $input['hasilforum_ket']          : null;
-        $realisasi          = (isset($input['realisasi']))      ? $input['realisasi']               : null;
-        $realisasi_th       = (isset($input['realisasi_th']))   ? $input['realisasi_th']            : null;
+        $verifikasi                 = (isset($input['verifikasi']))             ? $input['verifikasi']              : null;
+        $verifikasi_ket             = (isset($input['verifikasi_ket']))         ? $input['verifikasi_ket']          : null;
+        $hasilforum                 = (isset($input['hasilforum']))             ? $input['hasilforum']              : null;
+        $hasilforum_ket             = (isset($input['hasilforum_ket']))         ? $input['hasilforum_ket']          : null;
+        $realisasi                  = (isset($input['realisasi']))              ? $input['realisasi']               : null;
+        $realisasi_th               = (isset($input['realisasi_th']))           ? $input['realisasi_th']            : null;
 
         // vote
-        $like               = (isset($input['like']))           ? $input['like']                    : null;
-        $dislike            = (isset($input['dislike']))        ? $input['dislike']                 : null;
-        $like_users         = (isset($input['like_users']))     ? $input['like_users']              : null;
-        $dislike_users      = (isset($input['dislike_users']))  ? $input['dislike_users']           : null;
+        $like                       = (isset($input['like']))                   ? $input['like']                    : null;
+        $dislike                    = (isset($input['dislike']))                ? $input['dislike']                 : null;
+        $like_users                 = (isset($input['like_users']))             ? $input['like_users']              : null;
+        $dislike_users              = (isset($input['dislike_users']))          ? $input['dislike_users']           : null;
 
         // lokasi
-        $lokasi_cakupan     = (isset($input['lokasi_cakupan']))     ? $input['lokasi_cakupan']      : null;
-        $lokasi_detail      = (isset($input['lokasi_detail']))      ? $input['lokasi_detail']       : null;
-        $lokasi_kelurahan   = (isset($input['lokasi_kelurahan']))   ? $input['lokasi_kelurahan']    : null;
-        $lokasi_kecamatan   = (isset($input['lokasi_kecamatan']))   ? $input['lokasi_kecamatan']    : null;
+        $lokasi_cakupan             = (isset($input['lokasi_cakupan']))         ? $input['lokasi_cakupan']          : null;
+        $lokasi_detail              = (isset($input['lokasi_detail']))          ? $input['lokasi_detail']           : null;
+        $lokasi_kelurahan           = (isset($input['lokasi_kelurahan']))       ? $input['lokasi_kelurahan']        : null;
+        $lokasi_kecamatan           = (isset($input['lokasi_kecamatan']))       ? $input['lokasi_kecamatan']        : null;
 
         // foreign key
-        $tags               = (isset($input['tags']))           ? $input['tags']                    : null;
-        $skpd               = (isset($input['skpd']))           ? $input['skpd']                    : null;
+        $tags                       = (isset($input['tags']))                   ? $input['tags']                    : null;
+        $skpd                       = (isset($input['skpd']))                   ? $input['skpd']                    : null;
 
-        $user_id            = (isset($input['user_id']))        ? $input['user_id']                 : null;
+        //informasi
+        $ikp_konten                 = (isset($input['ikp_konten']))             ? $input['ikp_konten']              : null;
+        $ikp_jumlah                 = (isset($input['ikp_jumlah']))             ? $input['ikp_jumlah']              : null;
+        $ikp_unit                   = (isset($input['ikp_unit']))               ? $input['ikp_unit']                : null;
+        $ikp_verifikasi             = (isset($input['ikp_verifikasi']))         ? $input['ikp_verifikasi']          : null;
+        $ikp_verket                 = (isset($input['ikp_verket']))             ? $input['ikp_verket']              : null;
 
-        $feedback_id        = (isset($input['feedback_id']))    ? $input['feedback_id']             : null;
-        $information_id     = (isset($input['information_id'])) ? $input['information_id']          : null;
+        $anggaran                   = (isset($input['anggaran']))               ? $input['anggaran']                : null;
+        $anggaran_verifikasi        = (isset($input['anggaran_verifikasi']))    ? $input['anggaran_verifikasi']     : null;
+        $anggaran_verket            = (isset($input['anggaran_verket']))        ? $input['anggaran_verket']         : null;
+        $sumberanggaran             = (isset($input['sumberanggaran']))         ? $input['sumberanggaran']          : null;
+
+        $jeniskegiatan              = (isset($input['jeniskegiatan']))          ? $input['jeniskegiatan']           : null;
+        $keterangan                 = (isset($input['keterangan']))             ? $input['keterangan']              : null;
+
+        $foto_verifikasi            = (isset($input['foto_verifikasi']))        ? $input['foto_verifikasi']         : null;
+        $foto_verket                = (isset($input['foto_verket']))            ? $input['foto_verket']             : null;
+
+        $proposal_verifikasi        = (isset($input['proposal_verifikasi']))    ? $input['proposal_verifikasi']     : null;
+        $proposal_verket            = (isset($input['proposal_verket']))        ? $input['proposal_verket']         : null;
+
+        $foto                       = ($request->hasFile('foto'))               ? $request->file('foto')            : null;
+        $proposal                   = ($request->hasFile('proposal'))           ? $request->file('proposal')        : null;
+
+        // $user_id                    = (isset($input['user_id']))        ? $input['user_id']                 : null;
+        // $feedback_id                = (isset($input['feedback_id']))    ? $input['feedback_id']             : null;
+        // $information_id             = (isset($input['information_id'])) ? $input['information_id']          : null;
 
 
         if (!$isError) {
@@ -365,14 +466,6 @@ class DraftController extends Controller {
                             );
                         }
                     }
-                    // if (isset($like_users) && $like_users !== '') {
-                    //     $editedParams[]       = "like_users";
-                    //     $draft->push('like_users', array('like_users' => $like_users));
-                    // }
-                    // if (isset($dislike_users) && $dislike_users !== '') {
-                    //     $editedParams[]       = "dislike_users";
-                    //     $draft->push('dislike_users', array('dislike_users' => $dislike_users));
-                    // }
 
                     if (isset($lokasi_cakupan) && $lokasi_cakupan !== '') {
                         $editedParams[]       = "lokasi_cakupan";
@@ -393,18 +486,8 @@ class DraftController extends Controller {
 
                     if (isset($tags) && $tags !== '') {
                         $editedParams[]       = "tags";
-                        $draft->push('tags', array('tags' => $tags));
-                        // $draft->tags          = json_decode($tags, true);
-                    }
-
-                    if (isset($information_id) && $information_id !== '') {
-                        $editedParams[]       = "information_id";
-                        $draft->push('information_id', array('information_id' => $information_id));
-                    }
-
-                    if (isset($feedback_id) && $feedback_id !== '') {
-                        $editedParams[]       = "feedback_id";
-                        $draft->push('feedback_id', array('feedback_id' => $feedback_id));
+                        // $draft->push('tags', array('tags' => $tags));
+                        $draft->tags          = json_decode($tags, true);
                     }
 
                     if (isset($lokasi_detail) && $lokasi_detail !== '') {
@@ -422,6 +505,107 @@ class DraftController extends Controller {
                         $draft->lokasi_kecamatan   = $lokasi_kecamatan;
                     }
 
+                    // if (isset($information_id) && $information_id !== '') {
+                    //     $editedParams[]       = "information_id";
+                    //     $draft->push('information_id', array('information_id' => $information_id));
+                    // }
+                    //
+                    // if (isset($feedback_id) && $feedback_id !== '') {
+                    //     $editedParams[]       = "feedback_id";
+                    //     $draft->push('feedback_id', array('feedback_id' => $feedback_id));
+                    // }
+
+                    if (isset($ikp_konten) && $ikp_konten !== '') {
+                        $editedParams[]       = "ikp_konten";
+                        $draft->ikp_konten   = $ikp_konten;
+                    }
+                    if (isset($ikp_jumlah) && $ikp_jumlah !== '') {
+                        $editedParams[]       = "ikp_jumlah";
+                        $draft->ikp_jumlah   = $ikp_jumlah;
+                    }
+                    if (isset($ikp_unit) && $ikp_unit !== '') {
+                        $editedParams[]       = "ikp_unit";
+                        $draft->ikp_unit   = $ikp_unit;
+                    }
+                    if (isset($ikp_verifikasi) && $ikp_verifikasi !== '') {
+                        $editedParams[]       = "ikp_verifikasi";
+                        $draft->ikp_verifikasi   = $ikp_verifikasi;
+                    }
+                    if (isset($ikp_verket) && $ikp_verket !== '') {
+                        $editedParams[]       = "ikp_verket";
+                        $draft->ikp_verket   = $ikp_verket;
+                    }
+
+                    if (isset($anggaran) && $anggaran !== '') {
+                        $editedParams[]       = "anggaran";
+                        $draft->anggaran   = $anggaran;
+                    }
+                    if (isset($anggaran_verifikasi) && $anggaran_verifikasi !== '') {
+                        $editedParams[]       = "anggaran_verifikasi";
+                        $draft->anggaran_verifikasi   = $anggaran_verifikasi;
+                    }
+                    if (isset($anggaran_verket) && $anggaran_verket !== '') {
+                        $editedParams[]       = "anggaran_verket";
+                        $draft->anggaran_verket   = $anggaran_verket;
+                    }
+
+                    if (isset($sumberanggaran) && $sumberanggaran !== '') {
+                        $editedParams[]       = "sumberanggaran";
+                        $draft->sumberanggaran   = $sumberanggaran;
+                    }
+                    if (isset($jeniskegiatan) && $jeniskegiatan !== '') {
+                        $editedParams[]       = "jeniskegiatan";
+                        $draft->jeniskegiatan   = $jeniskegiatan;
+                    }
+                    if (isset($keterangan) && $keterangan !== '') {
+                        $editedParams[]       = "keterangan";
+                        $draft->keterangan   = $keterangan;
+                    }
+
+                    if (isset($foto_verifikasi) && $foto_verifikasi !== '') {
+                        $editedParams[]       = "foto_verifikasi";
+                        $draft->foto_verifikasi   = $foto_verifikasi;
+                    }
+                    if (isset($foto_verket) && $foto_verket !== '') {
+                        $editedParams[]       = "foto_verket";
+                        $draft->foto_verket   = $foto_verket;
+                    }
+
+                    if (isset($proposal_verifikasi) && $proposal_verifikasi !== '') {
+                        $editedParams[]       = "proposal_verifikasi";
+                        $draft->proposal_verifikasi   = $proposal_verifikasi;
+                    }
+                    if (isset($proposal_verket) && $proposal_verket !== '') {
+                        $editedParams[]       = "proposal_verket";
+                        $draft->proposal_verket   = $proposal_verket;
+                    }
+
+                    if ($foto) {
+                        $extension  = $foto->getClientOriginalExtension();
+                        if (in_array($extension, array('jpg', 'jpeg','png', 'JPG', 'JPEG', 'PNG',))) {
+                            $editedParams[] = "foto";
+                            if (file_exists($draft->foto)) { unlink($draft->foto); }
+
+                            $uploadedDest   = 'images/'.$id;
+                            $uploadedName   = 'foto.'.$extension;
+
+                            $foto->move($uploadedDest, $uploadedName);
+                            $draft->foto   = $uploadedDest.'/'.$uploadedName;
+                        }
+                    }
+                    if ($proposal) {
+                        $extension  = $proposal->getClientOriginalExtension();
+                        if (in_array($extension, array('pdf', 'doc','docx', 'PDF', 'DOC', 'DOCX',))) {
+                            $editedParams[] = "proposal";
+                            if (file_exists($draft->proposal)) { unlink($draft->proposal); }
+
+                            $uploadedDest   = 'images/'.$id;
+                            $uploadedName   = 'proposal.'.$extension;
+
+                            $proposal->move($uploadedDest, $uploadedName);
+                            $draft->proposal   = $uploadedDest.'/'.$uploadedName;
+                        }
+                    }
 
                     if (isset($editedParams)) {
                         $draft->save();
@@ -529,4 +713,129 @@ class DraftController extends Controller {
 
         return  response()->json($returnData, $statusCode)->header('access-control-allow-origin', '*');
     }
+
+    public function whereIn() {
+        $returnData         = array();
+        $response           = "OK";
+        $statusCode         = 200;
+        $result             = null;
+        $message            = "Belajar Where In.";
+        $isError            = FALSE;
+        $missingParams      = null;
+
+        if (!$isError) {
+            try {
+                $user_id    = "57c14e2844a5793ad06c7dbe";
+
+                // $result     = Draft::whereIn('like_users', array($user_id))->get(array('_id'));
+                $result     = Draft::where('user_id', $user_id)->get();
+                $result->feed = $result->getSubmitInfo();
+
+            } catch (\Exception $e) {
+                $response   = "FAILED";
+                $statusCode = 400;
+                $message    = $e->getMessage()." on line: " . $e->getLine();
+            }
+        }
+
+        $returnData = array(
+            'response'      => $response,
+            'status_code'   => $statusCode,
+            'message'       => $message,
+            'result'        => $result
+        );
+
+        return  response()->json($returnData, $statusCode)->header('access-control-allow-origin', '*');
+    }
+
+    public function uploadFiles(Request $request) {
+        $returnData         = array();
+        $response           = "OK";
+        $statusCode         = 200;
+        $result             = null;
+        $message            = "Test menyimpan foto baru sukses.";
+        $isError            = FALSE;
+        $missingParams      = null;
+
+        $input              = $request->all();
+
+        $foto                   = ($request->hasFile('foto'))               ? $request->file('foto')           : null;
+        $proposal               = ($request->hasFile('proposal'))           ? $request->file('proposal')       : null;
+
+        if (!isset($foto) || $foto == '') {
+            $missingParams[] = "foto";
+        }
+
+        if (isset($missingParams)) {
+            $isError    = TRUE;
+            $response   = "FAILED";
+            $statusCode = 400;
+            $message    = "Missing parameters : {".implode(', ', $missingParams)."}";
+        }
+
+        if (!$isError) {
+            try {
+                $testfoto      = Draft::create(array(
+                        'foto'                  => null,
+                        'proposal'              => null,
+                    ));
+
+                    if ($foto) {
+                        $foto_list = [];
+                        foreach ($foto as $key => $value) {
+                            # code...
+                            $extension = $value->getClientOriginalExtension();
+                            if (in_array($extension, array('jpg', 'png', 'jpeg', 'JPG', 'PNG', 'JPEG',))){
+                                $random_name    = substr( "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" ,mt_rand( 0 ,51 ) ,1 ) .substr( \md5( \time() ), 1);
+
+                                $uploadedDest   = 'images/test/';
+                                $uploadedName   = $random_name.'.'.$extension;
+
+                                $value->move($uploadedDest, $uploadedName);
+
+                                $foto_list[]   = $uploadedDest.'/'.$uploadedName;
+                            }
+                        }
+                        $testfoto->foto   = $foto_list;
+                        $testfoto->save();
+                    }
+
+                    if ($proposal) {
+                        $extension  = $proposal->getClientOriginalExtension();
+                        if (in_array($extension,  array('pdf', 'doc','docx', 'PDF', 'DOC', 'DOCX',))) {
+                            $random_name    = substr( "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" ,mt_rand( 0 ,51 ) ,1 ) .substr( \md5( \time() ), 1);
+
+                            $uploadedDest   = 'docs/test'.$testfoto->_id;
+                            $uploadedName   = $random_name.'.'.$extension;
+
+                            $proposal->move($uploadedDest, $uploadedName);
+
+                            $testfoto->proposal   = $uploadedDest.'/'.$uploadedName;
+                            $testfoto->save();
+                        }
+                    }
+
+                    // $result['id']   = $testfoto->_id;
+                    $result   = array(
+                        '_id'                 => $testfoto->_id,
+                    );
+
+            } catch (\Exception $e) {
+                $response   = "FAILED";
+                $statusCode = 400;
+                $message    = $e->getMessage()." on line: " . $e->getLine();
+            }
+        }
+
+        $returnData = array(
+            'response'      => $response,
+            'status_code'   => $statusCode,
+            'message'       => $message,
+            'result'        => $result
+        );
+
+        return  response()->json($returnData, $statusCode)->header('access-control-allow-origin', '*');
+    }
+
+
 }

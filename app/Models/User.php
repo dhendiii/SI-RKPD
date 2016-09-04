@@ -19,19 +19,30 @@ class User extends Eloquent{
 
   public $timestamps    = true;
 
-  public function location(){
-      return $this->hasOne('App\Models\Location','_id', 'location_id');
+  public function inforamtion(){
+      return $this->hasMany('App\Models\Information', '_id');
   }
+
+  public function draft(){
+      return $this->hasMany('App\Models\Draft', '_id');
+  }
+
+  public function feedback(){
+      return $this->hasMany('App\Models\Feedback', '_id');
+  }
+
 
   public function getDraft(){
       return Draft::whereIn('_id', $this->draft_id)->get();
   }
-  public function getInformation(){
-      return Information::whereIn('_id', $this->information_id)->get();
-  }
-  public function getFeedback(){
-      return Feedback::whereIn('_id', $this->feedback_id)->get();
-  }
+
+
+  // public function getInformation(){
+  //     return Information::whereIn('_id', $this->information_id)->get();
+  // }
+  // public function getFeedback(){
+  //     return Feedback::whereIn('_id', $this->feedback_id)->get();
+  // }
 
 
   //hasMany draft

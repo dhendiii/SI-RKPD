@@ -34,20 +34,42 @@ class DraftController extends Controller {
         if (!$isError) {
             try {
                 $draft      = Draft::with(array('user'))->take($limit)->skip($offset)->get();
-                $feedback   = Feedback::raw(function($collection) {
+                $komentar   = Feedback::raw(function($collection) {
+                    return $collection->aggregate(array(
+                        array('$match' => array('tipe' => array('$eq' => 'Komentar', '$ne' => null), 'deleted_at' => array('$exists' => false))),
+                        array('$group' => array('_id' => '$draft_id', 'total' => array('$sum' => 1)))
+                    ));
+                })->keyBy('_id');
+                $request    = Feedback::raw(function($collection) {
+                    return $collection->aggregate(array(
+                        array('$match' => array('tipe' => array('$eq' => 'Request informasi', '$ne' => null), 'deleted_at' => array('$exists' => false))),
+                        array('$group' => array('_id' => '$draft_id', 'total' => array('$sum' => 1)))
+                    ));
+                })->keyBy('_id');
+                $another    = Feedback::raw(function($collection) {
                     return $collection->aggregate(array(
                         array('$match' => array('tipe' => array('$nin' => array('Komentar', 'Request informasi'), '$ne' => null), 'deleted_at' => array('$exists' => false))),
                         array('$group' => array('_id' => '$draft_id', 'total' => array('$sum' => 1)))
                     ));
                 })->keyBy('_id');
 
-                $result     = $draft->each(function($val, $key) use ($feedback) {
-                    if (isset($feedback[$val->_id])) { $val->feedback_count = $feedback[$val->_id]['total']; } else { $val->feedback_count = 0; }
+                $result     = $draft->each(function($val, $key) use ($another) {
+                    $count  = array(
+                        'komentar'  => 0,
+                        'request'   => 0,
+                        'another'   => 0,
+                    );
+
+                    if (isset($komentar[$val->_id])) { $count['komentar'] = $komentar[$val->_id]['total']; }
+                    if (isset($request[$val->_id])) { $count['request'] = $request[$val->_id]['total']; }
+                    if (isset($another[$val->_id])) { $count['another'] = $another[$val->_id]['total']; }
+
+                    $draft->count   = $count;
                 });
 
                 // $result = array(
                 //     // 'draft'     => $draft,
-                //     'feedback'  => $feedback,
+                //     'another'  => $feedback,
                 // );
 
             } catch (\Exception $e) {

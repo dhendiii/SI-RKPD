@@ -33,10 +33,16 @@ class DraftController extends Controller {
 
         if (!$isError) {
             try {
-                $result = Draft::with(array('user'))
+                $draft      = Draft::with(array('user'))->take($limit)->skip($offset)->get();
+                $feedback   = Feedback::raw()->aggregate(array(
+                    array('$match' => array('tipe' => array('$nin' => array('Komentar', 'Request Informasi')))),
+                    array('$group' => array('_id' => '$draft_id', 'total' => array('$sum' => 1)))
+                ));
 
-                                ->take($limit)->skip($offset)->get();
-
+                $result = array(
+                    'draft'     => $draft,
+                    'feedback'  => $feedback,
+                );
 
             } catch (\Exception $e) {
                 $response   = "FAILED";

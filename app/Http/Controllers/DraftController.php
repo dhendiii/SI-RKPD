@@ -34,13 +34,15 @@ class DraftController extends Controller {
         if (!$isError) {
             try {
                 $draft      = Draft::with(array('user'))->take($limit)->skip($offset)->get();
-                $feedback   = Feedback::raw()->aggregate(array(
-                    array('$match' => array('tipe' => array('$nin' => array('Komentar', 'Request Informasi')))),
-                    array('$group' => array('_id' => '$draft_id', 'total' => array('$sum' => 1)))
-                ));
+                $feedback   = Feedback(function($collection) {
+                    return $collection->aggregate(array(
+                        array('$match' => array('tipe' => array('$nin' => array('Komentar', 'Request informasi')))),
+                        array('$group' => array('_id' => '$draft_id', 'total' => array('$sum' => 1)))
+                    ));
+                });
 
                 $result = array(
-                    'draft'     => $draft,
+                    // 'draft'     => $draft,
                     'feedback'  => $feedback,
                 );
 

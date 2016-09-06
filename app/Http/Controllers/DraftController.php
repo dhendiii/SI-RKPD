@@ -36,13 +36,13 @@ class DraftController extends Controller {
                 $draft      = Draft::with(array('user'))->take($limit)->skip($offset)->get();
                 $komentar   = Feedback::raw(function($collection) {
                     return $collection->aggregate(array(
-                        array('$match' => array('tipe' => array('$eq' => 'Komentar'), 'deleted_at' => array('$exists' => false))),
+                        array('$match' => array('tipe' => 'Komentar', 'deleted_at' => array('$exists' => false))),
                         array('$group' => array('_id' => '$draft_id', 'total' => array('$sum' => 1)))
                     ));
                 })->keyBy('_id');
                 $request    = Feedback::raw(function($collection) {
                     return $collection->aggregate(array(
-                        array('$match' => array('tipe' => array('$eq' => 'Request informasi'), 'deleted_at' => array('$exists' => false))),
+                        array('$match' => array('tipe' => 'Request informasi', 'deleted_at' => array('$exists' => false))),
                         array('$group' => array('_id' => '$draft_id', 'total' => array('$sum' => 1)))
                     ));
                 })->keyBy('_id');

@@ -34,17 +34,21 @@ class DraftController extends Controller {
         if (!$isError) {
             try {
                 $draft      = Draft::with(array('user'))->take($limit)->skip($offset)->get();
-                $feedback   = Feedback(function($collection) {
+                $feedback   = Feedback::raw(function($collection) {
                     return $collection->aggregate(array(
                         array('$match' => array('tipe' => array('$nin' => array('Komentar', 'Request informasi')))),
                         array('$group' => array('_id' => '$draft_id', 'total' => array('$sum' => 1)))
                     ));
+                })->mapWithKeys(function ($o) {return [$o['_id'] => $o['total']];});
+
+                $result     = $draft->each(function($val, $key) use ($feedback) {
+                    if (isset($feedback[$val->_id])) { $val->feedback_count = $feedback[$val->_id]; } else { $val->feedback_count = 0; }
                 });
 
-                $result = array(
+                // $result = array(
                     // 'draft'     => $draft,
-                    'feedback'  => $feedback,
-                );
+                    // 'feedback'  => $feedback,
+                // );
 
             } catch (\Exception $e) {
                 $response   = "FAILED";
